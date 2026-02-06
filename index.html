@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saha Veri Sistemi</title>
+    <title>Saha Veri Sistemi v4.2</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -93,6 +93,14 @@
             font-family: 'Roboto', sans-serif;
         }
 
+        /* YENİ EKLENEN ADA/PARSEL ALANI İÇİN STİL */
+        .ada-parsel-container {
+            grid-column: 1 / -1; /* Tüm satırı kapla */
+            display: flex;
+            gap: 15px;
+            align-items: flex-end; /* Butonu inputlarla hizala */
+        }
+
         /* Fotoğraf Alanı */
         .photo-upload-area {
             grid-column: 1 / -1;
@@ -114,6 +122,16 @@
         .btn-update { background-color: var(--warning); color: #fff; margin-bottom: 20px; }
         .btn-excel { background-color: var(--success); margin-top: 10px; }
         .btn-clear { background-color: #64748b; margin-top: 10px; font-size: 12px; padding: 10px;}
+        
+        /* Parsele Git Butonu Özel Stil */
+        .btn-parcel {
+            background-color: var(--success);
+            width: auto; /* Kendi içeriği kadar genişlik */
+            white-space: nowrap;
+            height: 39px; /* Input yüksekliğine eşitlemek için */
+            padding: 0 20px;
+            margin-bottom: 1px; /* Mikrometrik hizalama */
+        }
 
         /* Tablo */
         .list-container { margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
@@ -138,19 +156,12 @@
             position: fixed;
             left: -9999px;
             top: 0;
-            
-            /* DÜZELTME BURADA YAPILDI */
-            /* A4 Genişliği = 210mm. 
-               15mm Sol + 15mm Sağ boşluk bırakacağız. 
-               Geriye 180mm kalıyor. Güvenlik payı olarak 175mm yapıyoruz. */
             width: 175mm; 
-            
             background: white;
             padding: 0; 
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
-            /* İçeriği kendi içinde de ortala */
             margin: 0 auto;
         }
         
@@ -185,7 +196,6 @@
         .pdf-info-table td { border: 1px solid #999; padding: 8px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 150px; }
         
-        /* Fotoğraf Alanı */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -193,9 +203,8 @@
             margin-top: 10px;
         }
         .pdf-photo-box {
-            /* Genişliği %48 yaparak aradaki boşluğu koruyoruz */
             width: 48%; 
-            height: 320px; 
+            height: 270px; 
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -216,6 +225,11 @@
             text-align: center;
             color: #777;
         }
+        
+        @media (max-width: 600px) {
+            .ada-parsel-container { flex-direction: column; align-items: stretch; }
+            .btn-parcel { width: 100%; margin-top: 5px; }
+        }
 
     </style>
 </head>
@@ -228,7 +242,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v4.2</h2>
             <span id="count-badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:15px; font-size:14px; font-weight:bold;">0</span>
         </div>
         
@@ -251,6 +265,21 @@
                 <label>Kapı No</label>
                 <input type="text" id="kapiNo">
             </div>
+
+            <div class="ada-parsel-container">
+                <div class="input-group" style="flex: 1;">
+                    <label>Ada</label>
+                    <input type="text" id="ada">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>Parsel</label>
+                    <input type="text" id="parsel">
+                </div>
+                <button class="btn btn-parcel" onclick="openTKGM()">
+                    <i class="fas fa-map-marked-alt"></i> Parsele Git (TKGM)
+                </button>
+            </div>
+
             <div class="input-group">
                 <label>Enlem</label>
                 <input type="text" id="lat" readonly>
@@ -287,7 +316,7 @@
                     <thead>
                         <tr>
                             <th>İlçe / Mahalle</th>
-                            <th>Sokak / No</th>
+                            <th>Sokak / Ada / Parsel</th>
                             <th style="text-align: center;">İşlemler</th>
                         </tr>
                     </thead>
@@ -324,6 +353,7 @@
             <tr><td class="pdf-label">Mahalle</td><td id="pdf-mahalle"></td></tr>
             <tr><td class="pdf-label">Sokak / Cadde</td><td id="pdf-sokak"></td></tr>
             <tr><td class="pdf-label">Kapı No</td><td id="pdf-kapi"></td></tr>
+            <tr><td class="pdf-label">Ada / Parsel</td><td id="pdf-ada-parsel"></td></tr>
             <tr><td class="pdf-label">Koordinatlar</td><td id="pdf-coords"></td></tr>
         </table>
 
@@ -368,7 +398,6 @@
 
             map.on('click', onMapClick);
 
-            // ORTALA BUTONU
             var centerControl = L.Control.extend({
                 options: { position: 'topleft' },
                 onAdd: function (map) {
@@ -384,7 +413,6 @@
             });
             map.addControl(new centerControl());
 
-            // GPS BUTONU
             var gpsControl = L.Control.extend({
                 options: { position: 'topleft' },
                 onAdd: function (map) {
@@ -402,7 +430,6 @@
             map.addControl(new gpsControl());
         }
 
-        // --- KONUM BULMA ---
         function locateUser() {
             if (!navigator.geolocation) {
                 alert("Tarayıcınız konum özelliğini desteklemiyor.");
@@ -475,7 +502,26 @@
             }
         }
 
-        // --- PDF OLUŞTURMA (DÜZELTİLDİ) ---
+        // --- TKGM PARSEL SORGU YÖNLENDİRME (YENİ) ---
+        function openTKGM() {
+            const lat = document.getElementById('lat').value;
+            const lng = document.getElementById('lng').value;
+
+            if(!lat || !lng) {
+                alert("Lütfen önce haritadan bir konum seçin.");
+                return;
+            }
+
+            // TKGM Deep Link URL yapısı
+            const tkgmUrl = `https://parselsorgu.tkgm.gov.tr/#ara/cografi/${lat}/${lng}`;
+            
+            // Bilgilendirme ve Yönlendirme
+            if(confirm("TKGM Parsel Sorgu sayfası yeni sekmede açılacak.\n\nAçılan sayfadaki haritada işaretli yere tıklayarak 'Ada' ve 'Parsel' bilgilerini alıp buraya manuel girmelisiniz.\n\nDevam edilsin mi?")) {
+                window.open(tkgmUrl, '_blank');
+            }
+        }
+
+        // --- PDF OLUŞTURMA ---
         async function generatePDF() {
             const lat = document.getElementById('lat').value;
             if (!lat) { alert("Lütfen haritadan bir konum seçin!"); return; }
@@ -508,6 +554,7 @@
             document.getElementById('pdf-mahalle').innerText = document.getElementById('mahalle').value;
             document.getElementById('pdf-sokak').innerText = document.getElementById('sokak').value;
             document.getElementById('pdf-kapi').innerText = document.getElementById('kapiNo').value;
+            document.getElementById('pdf-ada-parsel').innerText = `${document.getElementById('ada').value} / ${document.getElementById('parsel').value}`;
             document.getElementById('pdf-coords').innerText = lat + ", " + document.getElementById('lng').value;
 
             await placeImageInPDF('img1', 'pdf-img-box-1');
@@ -517,9 +564,6 @@
             element.style.position = 'static'; 
             
             const opt = {
-                // Kenar boşlukları: 15mm. 
-                // İçerik genişliği 175mm yaptık. 15+15+175 = 205mm. 
-                // A4 210mm olduğu için 5mm tampon kalır ve asla taşmaz.
                 margin:       15, 
                 filename:     `Rapor_${document.getElementById('mahalle').value || 'Saha'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
@@ -550,7 +594,7 @@
             }
         }
 
-        // --- LİSTE VE EXCEL ---
+        // --- LİSTE VE VERİ YÖNETİMİ ---
         function handleFormAction() {
             const lat = document.getElementById('lat').value;
             if (!lat) { alert("Konum seçilmedi!"); return; }
@@ -560,6 +604,8 @@
                 mahalle: document.getElementById('mahalle').value,
                 sokak: document.getElementById('sokak').value,
                 kapiNo: document.getElementById('kapiNo').value,
+                ada: document.getElementById('ada').value,
+                parsel: document.getElementById('parsel').value,
                 lat: lat,
                 lng: document.getElementById('lng').value,
                 tarih: new Date().toLocaleString('tr-TR')
@@ -594,6 +640,8 @@
             document.getElementById('mahalle').value = item.mahalle;
             document.getElementById('sokak').value = item.sokak;
             document.getElementById('kapiNo').value = item.kapiNo;
+            document.getElementById('ada').value = item.ada || "";
+            document.getElementById('parsel').value = item.parsel || "";
             document.getElementById('lat').value = item.lat;
             document.getElementById('lng').value = item.lng;
 
@@ -619,6 +667,8 @@
             document.getElementById('mahalle').value = "";
             document.getElementById('sokak').value = "";
             document.getElementById('kapiNo').value = "";
+            document.getElementById('ada').value = "";
+            document.getElementById('parsel').value = "";
             document.getElementById('lat').value = "";
             document.getElementById('lng').value = "";
             document.getElementById('img1').value = "";
@@ -658,9 +708,11 @@
             badge.innerText = savedLocations.length;
 
             [...savedLocations].reverse().forEach(loc => {
+                const adaParselText = (loc.ada || loc.parsel) ? `<br><small style="color:#666">Ada: ${loc.ada} / Parsel: ${loc.parsel}</small>` : '';
+                
                 const row = `<tr>
                     <td>${loc.ilce} / ${loc.mahalle}</td>
-                    <td>${loc.sokak} No:${loc.kapiNo}</td>
+                    <td>${loc.sokak} No:${loc.kapiNo} ${adaParselText}</td>
                     <td style="text-align:center;">
                         <button class="action-btn edit-btn" onclick="editItem(${loc.id})"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete-btn" onclick="deleteItem(${loc.id})"><i class="fas fa-trash-alt"></i></button>
@@ -674,7 +726,8 @@
             if (savedLocations.length === 0) { alert("Liste boş!"); return; }
             const excelData = savedLocations.map(loc => ({
                 "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
-                "No": loc.kapiNo, "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
+                "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
+                "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
             }));
             const ws = XLSX.utils.json_to_sheet(excelData);
             const wb = XLSX.utils.book_new();
