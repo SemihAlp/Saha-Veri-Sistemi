@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saha Veri Sistemi v4.2</title>
+    <title>Saha Veri Sistemi v5.0 (Ortalı)</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -24,17 +24,20 @@
             margin: 0;
             padding: 20px;
             background-color: var(--light);
-            display: flex;
-            justify-content: center;
+            /* Flex kaldırıldı, standart akış kullanılıyor */
         }
 
         .container {
             background: white;
             width: 100%;
-            max-width: 800px;
+            max-width: 800px; /* Maksimum genişlik */
             padding: 25px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            
+            /* SAYFAYI ORTALAYAN KOD */
+            margin: 0 auto; 
+            display: block;
         }
 
         h2 { text-align: center; color: var(--dark); margin-top: 0; }
@@ -93,12 +96,22 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        /* YENİ EKLENEN ADA/PARSEL ALANI İÇİN STİL */
+        /* ID Inputu Özel Stil */
+        #recordId {
+            background-color: #e0e7ff;
+            color: var(--primary);
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-color: #a5b4fc;
+            text-align: center;
+        }
+
+        /* ADA/PARSEL ALANI */
         .ada-parsel-container {
-            grid-column: 1 / -1; /* Tüm satırı kapla */
+            grid-column: 1 / -1; 
             display: flex;
             gap: 15px;
-            align-items: flex-end; /* Butonu inputlarla hizala */
+            align-items: flex-end;
         }
 
         /* Fotoğraf Alanı */
@@ -123,14 +136,13 @@
         .btn-excel { background-color: var(--success); margin-top: 10px; }
         .btn-clear { background-color: #64748b; margin-top: 10px; font-size: 12px; padding: 10px;}
         
-        /* Parsele Git Butonu Özel Stil */
         .btn-parcel {
             background-color: var(--success);
-            width: auto; /* Kendi içeriği kadar genişlik */
+            width: auto;
             white-space: nowrap;
-            height: 39px; /* Input yüksekliğine eşitlemek için */
+            height: 39px;
             padding: 0 20px;
-            margin-bottom: 1px; /* Mikrometrik hizalama */
+            margin-bottom: 1px;
         }
 
         /* Tablo */
@@ -163,14 +175,29 @@
             color: #000;
             box-sizing: border-box;
             margin: 0 auto;
+            position: relative;
         }
         
         .pdf-header {
             text-align: center; border-bottom: 2px solid #cc0000;
             padding-bottom: 5px; margin-bottom: 15px;
+            margin-top: 20px;
         }
         .pdf-title { font-size: 22px; font-weight: bold; color: #cc0000; margin: 0; }
         .pdf-subtitle { font-size:12px; color:#555; margin-top: 2px; }
+
+        /* PDF SAĞ ÜST ID KUTUSU */
+        .pdf-id-box {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 2px solid #333;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 14px;
+            background-color: #f3f4f6;
+            color: #333;
+        }
 
         .pdf-section-title {
             font-weight: bold; 
@@ -230,7 +257,6 @@
             .ada-parsel-container { flex-direction: column; align-items: stretch; }
             .btn-parcel { width: 100%; margin-top: 5px; }
         }
-
     </style>
 </head>
 <body>
@@ -242,13 +268,18 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v4.2</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v5.0</h2>
             <span id="count-badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:15px; font-size:14px; font-weight:bold;">0</span>
         </div>
         
         <div id="map"></div>
 
         <div class="form-grid" id="formArea">
+            <div class="input-group" style="grid-column: 1 / -1;">
+                <label>KAYIT ID (Otomatik)</label>
+                <input type="text" id="recordId" readonly placeholder="Haritadan konum seçiniz...">
+            </div>
+
             <div class="input-group">
                 <label>İlçe</label>
                 <input type="text" id="ilce">
@@ -315,7 +346,7 @@
                 <table id="locationTable">
                     <thead>
                         <tr>
-                            <th>İlçe / Mahalle</th>
+                            <th>ID</th> <th>İlçe / Mahalle</th>
                             <th>Sokak / Ada / Parsel</th>
                             <th style="text-align: center;">İşlemler</th>
                         </tr>
@@ -336,6 +367,8 @@
     </div>
 
     <div id="printable-area">
+        <div id="pdf-id-display" class="pdf-id-box"></div>
+
         <div class="pdf-header">
             <div class="pdf-title">SAHA TESPİT FORMU</div>
             <div class="pdf-subtitle">Otomatik Konum Raporlama Sistemi</div>
@@ -348,6 +381,7 @@
 
         <div class="pdf-section-title">2. ADRES VE KONUM DETAYLARI</div>
         <table class="pdf-info-table">
+            <tr><td class="pdf-label">Kayıt ID</td><td id="pdf-record-id"></td></tr>
             <tr><td class="pdf-label">Tarih</td><td id="pdf-date"></td></tr>
             <tr><td class="pdf-label">İlçe</td><td id="pdf-ilce"></td></tr>
             <tr><td class="pdf-label">Mahalle</td><td id="pdf-mahalle"></td></tr>
@@ -366,7 +400,6 @@
                 <span style="color:#ccc; font-size:10px;">Fotoğraf 2 Yok</span>
             </div>
         </div>
-        
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -378,6 +411,18 @@
         let map, marker;
         let savedLocations = JSON.parse(localStorage.getItem('fieldData')) || [];
         let editingId = null;
+
+        // --- ID ÜRETİCİ ---
+        function generateRecordID() {
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = String(now.getFullYear()).slice(-2);
+            const H = String(now.getHours()).padStart(2, '0');
+            const M = String(now.getMinutes()).padStart(2, '0');
+            const S = String(now.getSeconds()).padStart(2, '0');
+            return `${d}${m}${y}${H}${M}${S}`;
+        }
 
         function initMap() {
             map = L.map('map').setView([40.1885, 29.0610], 12);
@@ -445,6 +490,11 @@
                     map.setView([lat, lng], 18);
                     updateMarker(lat, lng);
                     getAddress(lat, lng); 
+                    
+                    // ID oluştur
+                    if(!editingId) {
+                        document.getElementById('recordId').value = generateRecordID();
+                    }
                 },
                 () => {
                     alert("Konum alınamadı. GPS iznini kontrol et.");
@@ -463,6 +513,11 @@
         }
 
         async function onMapClick(e) {
+            // ID Oluştur
+            if(!editingId) {
+                document.getElementById('recordId').value = generateRecordID();
+            }
+
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
             updateMarker(lat, lng);
@@ -502,7 +557,6 @@
             }
         }
 
-        // --- TKGM PARSEL SORGU YÖNLENDİRME (YENİ) ---
         function openTKGM() {
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
@@ -511,12 +565,9 @@
                 alert("Lütfen önce haritadan bir konum seçin.");
                 return;
             }
-
-            // TKGM Deep Link URL yapısı
+            // Manuel Bakma Linki
             const tkgmUrl = `https://parselsorgu.tkgm.gov.tr/#ara/cografi/${lat}/${lng}`;
-            
-            // Bilgilendirme ve Yönlendirme
-            if(confirm("TKGM Parsel Sorgu sayfası yeni sekmede açılacak.\n\nAçılan sayfadaki haritada işaretli yere tıklayarak 'Ada' ve 'Parsel' bilgilerini alıp buraya manuel girmelisiniz.\n\nDevam edilsin mi?")) {
+            if(confirm("TKGM Parsel Sorgu sayfası yeni sekmede açılacak.\n\nHaritada işaretli yere tıklayarak Ada/Parsel bilgisini alıp forma manuel giriniz.")) {
                 window.open(tkgmUrl, '_blank');
             }
         }
@@ -524,7 +575,10 @@
         // --- PDF OLUŞTURMA ---
         async function generatePDF() {
             const lat = document.getElementById('lat').value;
+            const recordId = document.getElementById('recordId').value;
+            
             if (!lat) { alert("Lütfen haritadan bir konum seçin!"); return; }
+            if (!recordId) { alert("ID yok. Lütfen haritaya tıklayın."); return; }
 
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loaderText').innerText = "PDF Hazırlanıyor...";
@@ -549,6 +603,8 @@
             }
 
             document.getElementById('pdf-map-image').src = mapDataUrl;
+            document.getElementById('pdf-id-display').innerText = "KAYIT NO: " + recordId;
+            document.getElementById('pdf-record-id').innerText = recordId;
             document.getElementById('pdf-date').innerText = new Date().toLocaleString('tr-TR');
             document.getElementById('pdf-ilce').innerText = document.getElementById('ilce').value;
             document.getElementById('pdf-mahalle').innerText = document.getElementById('mahalle').value;
@@ -565,7 +621,7 @@
             
             const opt = {
                 margin:       15, 
-                filename:     `Rapor_${document.getElementById('mahalle').value || 'Saha'}.pdf`,
+                filename:     `Rapor_${recordId}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -599,7 +655,10 @@
             const lat = document.getElementById('lat').value;
             if (!lat) { alert("Konum seçilmedi!"); return; }
 
+            const currentRecordId = document.getElementById('recordId').value || generateRecordID();
+
             const formData = {
+                recordId: currentRecordId, 
                 ilce: document.getElementById('ilce').value,
                 mahalle: document.getElementById('mahalle').value,
                 sokak: document.getElementById('sokak').value,
@@ -614,6 +673,7 @@
             if (editingId !== null) {
                 const index = savedLocations.findIndex(loc => loc.id === editingId);
                 if (index !== -1) {
+                    formData.recordId = savedLocations[index].recordId; 
                     savedLocations[index] = { ...savedLocations[index], ...formData };
                     savedLocations[index].id = editingId;
                 }
@@ -636,6 +696,7 @@
             const item = savedLocations.find(loc => loc.id === id);
             if (!item) return;
 
+            document.getElementById('recordId').value = item.recordId; 
             document.getElementById('ilce').value = item.ilce;
             document.getElementById('mahalle').value = item.mahalle;
             document.getElementById('sokak').value = item.sokak;
@@ -663,6 +724,7 @@
             btn.className = 'btn btn-add';
             document.getElementById('formArea').classList.remove('editing-mode');
             
+            document.getElementById('recordId').value = ""; 
             document.getElementById('ilce').value = "";
             document.getElementById('mahalle').value = "";
             document.getElementById('sokak').value = "";
@@ -711,6 +773,7 @@
                 const adaParselText = (loc.ada || loc.parsel) ? `<br><small style="color:#666">Ada: ${loc.ada} / Parsel: ${loc.parsel}</small>` : '';
                 
                 const row = `<tr>
+                    <td style="font-weight:bold; color:#2563eb;">${loc.recordId}</td>
                     <td>${loc.ilce} / ${loc.mahalle}</td>
                     <td>${loc.sokak} No:${loc.kapiNo} ${adaParselText}</td>
                     <td style="text-align:center;">
@@ -725,6 +788,7 @@
         function exportToExcel() {
             if (savedLocations.length === 0) { alert("Liste boş!"); return; }
             const excelData = savedLocations.map(loc => ({
+                "Kayıt ID": loc.recordId, 
                 "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
                 "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
                 "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
