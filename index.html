@@ -2,8 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saha Veri Sistemi v5.0 (Ortalı)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Saha Veri Sistemi v5.3 (Final Tam)</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -19,30 +19,35 @@
             --light: #f3f4f6;
         }
 
-        body {
-            font-family: 'Roboto', sans-serif;
+        /* SAYFA YAPISI (KAYMAYI ENGELLEYEN AYARLAR) */
+        html, body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: var(--light);
-            /* Flex kaldırıldı, standart akış kullanılıyor */
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden; /* Yatay kaymayı engeller */
+            width: 100%;
+        }
+
+        body {
+            padding: 20px 0;
         }
 
         .container {
             background: white;
-            width: 100%;
-            max-width: 800px; /* Maksimum genişlik */
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            
-            /* SAYFAYI ORTALAYAN KOD */
-            margin: 0 auto; 
+            width: 94%;
+            max-width: 800px;
+            margin: 0 auto; /* Ortala */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: block;
+            box-sizing: border-box;
         }
 
-        h2 { text-align: center; color: var(--dark); margin-top: 0; }
+        h2 { text-align: center; color: var(--dark); margin-top: 0; font-size: 22px; }
 
-        /* Harita Ayarları */
+        /* Harita */
         #map {
             height: 400px;
             width: 100%;
@@ -52,7 +57,6 @@
             z-index: 1;
         }
 
-        /* Harita Butonları */
         .leaflet-control-custom {
             background-color: white;
             border: 2px solid rgba(0,0,0,0.2);
@@ -62,20 +66,23 @@
             cursor: pointer; color: #333; font-size: 16px;
             margin-bottom: 5px;
             box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-            transition: all 0.2s;
         }
-        .leaflet-control-custom:hover { background-color: #f4f4f4; color: var(--primary); }
 
-        /* Form Alanı */
+        /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
-            padding: 20px;
+            padding: 15px;
             background-color: #f8fafc;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
+        }
+
+        /* Mobilde tek sütun */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
         }
 
         .editing-mode {
@@ -83,20 +90,18 @@
             border-color: var(--warning) !important;
         }
 
-        .input-group { display: flex; flex-direction: column; }
+        .input-group { display: flex; flex-direction: column; width: 100%; }
         
         label {
-            font-size: 12px; color: #64748b; margin-bottom: 4px;
+            font-size: 11px; color: #64748b; margin-bottom: 4px;
             font-weight: 700; text-transform: uppercase;
         }
 
         input {
             padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;
             font-size: 14px; width: 100%; box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
         }
 
-        /* ID Inputu Özel Stil */
         #recordId {
             background-color: #e0e7ff;
             color: var(--primary);
@@ -106,156 +111,156 @@
             text-align: center;
         }
 
-        /* ADA/PARSEL ALANI */
         .ada-parsel-container {
             grid-column: 1 / -1; 
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: flex-end;
         }
 
-        /* Fotoğraf Alanı */
         .photo-upload-area {
             grid-column: 1 / -1;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
             margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 15px;
         }
 
         /* Butonlar */
         .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
             color: white; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            gap: 8px; font-size: 15px; font-family: 'Roboto', sans-serif;
+            gap: 8px; font-size: 14px; font-family: 'Roboto', sans-serif;
             transition: all 0.2s;
+            margin-bottom: 8px;
         }
         .btn:active { transform: scale(0.98); }
-        .btn-pdf { background-color: var(--danger); margin-bottom: 10px; }
+        .btn-pdf { background-color: var(--danger); margin-bottom: 15px; }
         .btn-add { background-color: var(--primary); margin-bottom: 20px; }
         .btn-update { background-color: var(--warning); color: #fff; margin-bottom: 20px; }
         .btn-excel { background-color: var(--success); margin-top: 10px; }
-        .btn-clear { background-color: #64748b; margin-top: 10px; font-size: 12px; padding: 10px;}
+        .btn-clear { background-color: #64748b; margin-top: 5px; font-size: 12px; padding: 10px;}
         
         .btn-parcel {
             background-color: var(--success);
             width: auto;
             white-space: nowrap;
-            height: 39px;
-            padding: 0 20px;
+            height: 38px;
+            padding: 0 15px;
             margin-bottom: 1px;
+            font-size: 12px;
         }
 
-        /* Tablo */
-        .list-container { margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { text-align: left; padding: 10px; background: #f1f5f9; color: #475569; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        /* Liste Tablosu */
+        .list-container { margin-top: 10px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 8px; background: #f1f5f9; color: #475569; }
+        td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
         .action-btn { border: none; background: none; cursor: pointer; font-size: 16px; margin: 0 5px; }
         .delete-btn { color: var(--danger); }
         .edit-btn { color: var(--warning); }
 
-        /* Loader */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.95); display: none; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999;
             color: var(--primary); font-weight: bold;
-            text-align: center;
         }
 
-        /* --- PDF İÇİN ÖZEL DÜZEN --- */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #333;
+            color: #fff; text-align: center; border-radius: 8px; padding: 16px;
+            position: fixed; z-index: 9999; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-size: 14px;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- PDF İÇİN ÖZEL DÜZEN (A4 TEK SAYFA) --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
-            width: 175mm; 
+            width: 190mm; /* A4 genişliğine uygun */
             background: white;
             padding: 0; 
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
-            margin: 0 auto;
-            position: relative;
         }
         
         .pdf-header {
             text-align: center; border-bottom: 2px solid #cc0000;
-            padding-bottom: 5px; margin-bottom: 15px;
-            margin-top: 20px;
+            padding-bottom: 5px; margin-bottom: 10px;
+            margin-top: 10px;
+            position: relative;
         }
-        .pdf-title { font-size: 22px; font-weight: bold; color: #cc0000; margin: 0; }
-        .pdf-subtitle { font-size:12px; color:#555; margin-top: 2px; }
+        .pdf-title { font-size: 20px; font-weight: bold; color: #cc0000; margin: 0; }
+        .pdf-subtitle { font-size:10px; color:#555; margin-top: 2px; }
 
-        /* PDF SAĞ ÜST ID KUTUSU */
         .pdf-id-box {
             position: absolute;
-            top: 0;
-            right: 0;
-            border: 2px solid #333;
-            padding: 5px 10px;
+            top: 0; right: 0;
+            border: 1px solid #333;
+            padding: 3px 8px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             background-color: #f3f4f6;
-            color: #333;
         }
 
         .pdf-section-title {
             font-weight: bold; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
+            margin-bottom: 3px; 
+            font-size: 12px; 
             background: #f3f4f6; 
-            padding: 5px;
+            padding: 4px;
             border-left: 4px solid #cc0000;
         }
 
         .pdf-map-container {
             width: 100%; 
-            height: 300px; 
+            height: 350px; /* Harita yüksekliği artırıldı */
             border: 1px solid #ccc;
-            margin-bottom: 15px; 
+            margin-bottom: 10px; 
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             background-color: #eee;
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        .pdf-info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
-        .pdf-info-table td { border: 1px solid #999; padding: 8px; }
-        .pdf-label { font-weight: bold; background-color: #f9fafb; width: 150px; }
+        .pdf-info-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px; }
+        .pdf-info-table td { border: 1px solid #999; padding: 5px; }
+        .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
             gap: 10px; 
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .pdf-photo-box {
-            width: 48%; 
-            height: 270px; 
+            width: 49%; 
+            height: 220px; /* Fotoğraf yüksekliği optimize edildi */
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
             overflow: hidden;
-            border-radius: 4px;
+            border-radius: 2px;
         }
-        .pdf-photo-img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
+        .pdf-photo-img { width: 100%; height: 100%; object-fit: cover; }
 
         .pdf-footer {
-            margin-top: 20px; 
+            margin-top: 10px; 
             border-top: 1px solid #ccc; 
-            padding-top: 5px; 
-            font-size: 10px; 
+            padding-top: 3px; 
+            font-size: 9px; 
             text-align: center;
             color: #777;
         }
         
         @media (max-width: 600px) {
-            .ada-parsel-container { flex-direction: column; align-items: stretch; }
-            .btn-parcel { width: 100%; margin-top: 5px; }
+            .ada-parsel-container { flex-direction: row; }
+            .btn-parcel { margin-left: auto; }
         }
     </style>
 </head>
@@ -266,9 +271,11 @@
         <div style="margin-top: 15px;" id="loaderText">İşlem Yapılıyor...</div>
     </div>
 
+    <div id="toast">Fotoğraf cihazınıza indirildi!</div>
+
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v5.0</h2>
+            <h2 style="margin:0;">📍 Saha Veri v5.3</h2>
             <span id="count-badge" style="background:var(--primary); color:white; padding:4px 12px; border-radius:15px; font-size:14px; font-weight:bold;">0</span>
         </div>
         
@@ -276,8 +283,8 @@
 
         <div class="form-grid" id="formArea">
             <div class="input-group" style="grid-column: 1 / -1;">
-                <label>KAYIT ID (Otomatik)</label>
-                <input type="text" id="recordId" readonly placeholder="Haritadan konum seçiniz...">
+                <label>KAYIT ID</label>
+                <input type="text" id="recordId" readonly placeholder="Otomatik...">
             </div>
 
             <div class="input-group">
@@ -307,7 +314,7 @@
                     <input type="text" id="parsel">
                 </div>
                 <button class="btn btn-parcel" onclick="openTKGM()">
-                    <i class="fas fa-map-marked-alt"></i> Parsele Git (TKGM)
+                    <i class="fas fa-map-marked-alt"></i> TKGM
                 </button>
             </div>
 
@@ -322,54 +329,52 @@
 
             <div class="photo-upload-area">
                 <div class="input-group">
-                    <label>Rapor Fotoğrafı 1</label>
-                    <input type="file" id="img1" accept="image/*">
+                    <label>Rapor Foto 1 (Oto İndir)</label>
+                    <input type="file" id="img1" accept="image/*" capture="environment">
                 </div>
                 <div class="input-group">
-                    <label>Rapor Fotoğrafı 2</label>
-                    <input type="file" id="img2" accept="image/*">
+                    <label>Rapor Foto 2 (Oto İndir)</label>
+                    <input type="file" id="img2" accept="image/*" capture="environment">
                 </div>
             </div>
         </div>
 
         <button class="btn btn-pdf" onclick="generatePDF()">
-            <i class="fas fa-file-pdf"></i> Form Hazırla (PDF İndir)
+            <i class="fas fa-file-pdf"></i> Tek Sayfa PDF İndir
         </button>
 
         <button id="mainBtn" class="btn btn-add" onclick="handleFormAction()">
-            <i class="fas fa-plus-circle"></i> Bu Konumu Listeye Ekle
+            <i class="fas fa-plus-circle"></i> Listeye Ekle
         </button>
 
         <div class="list-container">
-            <h3>Eklenen Konumlar</h3>
+            <h3>Kayıt Listesi</h3>
             <div style="overflow-x: auto;">
                 <table id="locationTable">
                     <thead>
                         <tr>
-                            <th>ID</th> <th>İlçe / Mahalle</th>
-                            <th>Sokak / Ada / Parsel</th>
-                            <th style="text-align: center;">İşlemler</th>
+                            <th>ID</th> <th>Konum</th> <th>Ada/Parsel</th>
+                            <th style="text-align: center;">İşlem</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
-                <div id="emptyMsg" style="text-align:center; color:#999; padding:20px;">Henüz listeye konum eklenmedi.</div>
+                <div id="emptyMsg" style="text-align:center; color:#999; padding:20px;">Liste boş.</div>
             </div>
         </div>
 
         <button class="btn btn-excel" onclick="exportToExcel()">
-            <i class="fas fa-file-excel"></i> Excel Olarak İndir
+            <i class="fas fa-file-excel"></i> Excel İndir
         </button>
         
         <button class="btn btn-clear" onclick="clearAllData()">
-            <i class="fas fa-trash"></i> Tümünü Temizle
+            <i class="fas fa-trash"></i> Temizle
         </button>
     </div>
 
     <div id="printable-area">
-        <div id="pdf-id-display" class="pdf-id-box"></div>
-
         <div class="pdf-header">
+            <div class="pdf-id-box" id="pdf-id-display"></div>
             <div class="pdf-title">SAHA TESPİT FORMU</div>
             <div class="pdf-subtitle">Otomatik Konum Raporlama Sistemi</div>
         </div>
@@ -381,11 +386,10 @@
 
         <div class="pdf-section-title">2. ADRES VE KONUM DETAYLARI</div>
         <table class="pdf-info-table">
+            <tr><td class="pdf-label">Kayıt ID</td><td id="pdf-record-id"></td></tr>
             <tr><td class="pdf-label">Tarih</td><td id="pdf-date"></td></tr>
-            <tr><td class="pdf-label">İlçe</td><td id="pdf-ilce"></td></tr>
-            <tr><td class="pdf-label">Mahalle</td><td id="pdf-mahalle"></td></tr>
-            <tr><td class="pdf-label">Sokak / Cadde</td><td id="pdf-sokak"></td></tr>
-            <tr><td class="pdf-label">Kapı No</td><td id="pdf-kapi"></td></tr>
+            <tr><td class="pdf-label">İlçe / Mahalle</td><td id="pdf-ilce-mahalle"></td></tr>
+            <tr><td class="pdf-label">Adres</td><td id="pdf-adres"></td></tr>
             <tr><td class="pdf-label">Ada / Parsel</td><td id="pdf-ada-parsel"></td></tr>
             <tr><td class="pdf-label">Koordinatlar</td><td id="pdf-coords"></td></tr>
         </table>
@@ -399,6 +403,7 @@
                 <span style="color:#ccc; font-size:10px;">Fotoğraf 2 Yok</span>
             </div>
         </div>
+        <div class="pdf-footer">Bu belge dijital olarak oluşturulmuştur.</div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -411,7 +416,6 @@
         let savedLocations = JSON.parse(localStorage.getItem('fieldData')) || [];
         let editingId = null;
 
-        // --- ID ÜRETİCİ ---
         function generateRecordID() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -425,107 +429,40 @@
 
         function initMap() {
             map = L.map('map').setView([40.1885, 29.0610], 12);
-
-            // 1. ESRI UYDU
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri',
-                maxZoom: 19,
-                crossOrigin: 'anonymous'
-            }).addTo(map);
-
-            // 2. SOKAK İSİMLERİ
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy;OpenStreetMap, &copy;CartoDB',
-                maxZoom: 20,
-                crossOrigin: 'anonymous'
-            }).addTo(map);
-
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri', maxZoom: 19, crossOrigin: 'anonymous' }).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { attribution: 'OSM', maxZoom: 20, crossOrigin: 'anonymous' }).addTo(map);
             map.on('click', onMapClick);
-
-            var centerControl = L.Control.extend({
-                options: { position: 'topleft' },
-                onAdd: function (map) {
-                    var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                    container.innerHTML = '<i class="fas fa-crosshairs"></i>';
-                    container.title = "Ortala";
-                    container.onclick = function(e){
-                        e.stopPropagation();
-                        centerMapOnMarker();
-                    }
-                    return container;
-                }
-            });
-            map.addControl(new centerControl());
-
-            var gpsControl = L.Control.extend({
-                options: { position: 'topleft' },
-                onAdd: function (map) {
-                    var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                    container.innerHTML = '<i class="fas fa-location-arrow"></i>';
-                    container.style.color = "#2563eb"; 
-                    container.title = "Konumumu Bul";
-                    container.onclick = function(e){
-                        e.stopPropagation();
-                        locateUser();
-                    }
-                    return container;
-                }
-            });
-            map.addControl(new gpsControl());
+            
+            // Kontroller
+            L.Control.extend({ options: { position: 'topleft' }, onAdd: function() { 
+                let d = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom'); d.innerHTML = '<i class="fas fa-crosshairs"></i>'; d.onclick = (e) => { e.stopPropagation(); centerMapOnMarker(); }; return d; 
+            }}).addTo(map);
+            L.Control.extend({ options: { position: 'topleft' }, onAdd: function() { 
+                let d = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom'); d.innerHTML = '<i class="fas fa-location-arrow"></i>'; d.style.color="#2563eb"; d.onclick = (e) => { e.stopPropagation(); locateUser(); }; return d; 
+            }}).addTo(map);
         }
 
         function locateUser() {
-            if (!navigator.geolocation) {
-                alert("Tarayıcınız konum özelliğini desteklemiyor.");
-                return;
-            }
+            if (!navigator.geolocation) { alert("Tarayıcı desteklemiyor."); return; }
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "Konumun Alınıyor...";
-
+            document.getElementById('loaderText').innerText = "Konum Alınıyor...";
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setView([lat, lng], 18);
-                    updateMarker(lat, lng);
-                    getAddress(lat, lng); 
-                    
-                    // ID oluştur
-                    if(!editingId) {
-                        document.getElementById('recordId').value = generateRecordID();
-                    }
+                (pos) => {
+                    const { latitude: lat, longitude: lng } = pos.coords;
+                    map.setView([lat, lng], 18); updateMarker(lat, lng); getAddress(lat, lng);
+                    if(!editingId) document.getElementById('recordId').value = generateRecordID();
                 },
-                () => {
-                    alert("Konum alınamadı. GPS iznini kontrol et.");
-                    document.getElementById('loader').style.display = 'none';
-                },
+                () => { alert("Konum alınamadı."); document.getElementById('loader').style.display = 'none'; },
                 { enableHighAccuracy: true }
             );
         }
 
-        function centerMapOnMarker() {
-            if(marker) { 
-                map.setView(marker.getLatLng(), 18); 
-            } else { 
-                alert("Önce haritada bir yer işaretleyin."); 
-            }
-        }
+        function centerMapOnMarker() { if(marker) map.setView(marker.getLatLng(), 18); else alert("Konum seçin."); }
 
         async function onMapClick(e) {
-            // ID Oluştur
-            if(!editingId) {
-                document.getElementById('recordId').value = generateRecordID();
-            }
-
-            const lat = e.latlng.lat;
-            const lng = e.latlng.lng;
-            updateMarker(lat, lng);
-            
-            document.getElementById('ilce').value = "Aranıyor...";
-            document.getElementById('mahalle').value = "...";
-            document.getElementById('sokak').value = "...";
-            
-            await getAddress(lat, lng);
+            if(!editingId) document.getElementById('recordId').value = generateRecordID();
+            updateMarker(e.latlng.lat, e.latlng.lng);
+            await getAddress(e.latlng.lat, e.latlng.lng);
         }
 
         function updateMarker(lat, lng) {
@@ -537,89 +474,68 @@
 
         async function getAddress(lat, lng) {
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "Adres Çözümleniyor...";
-            
-            const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+            document.getElementById('loaderText').innerText = "Adres...";
             try {
-                const response = await fetch(url, { headers: { 'User-Agent': 'SahaVeri/3.3' } });
-                const data = await response.json();
-                const addr = data.address;
-
-                document.getElementById('ilce').value = addr.town || addr.city_district || addr.county || '';
-                document.getElementById('mahalle').value = addr.suburb || addr.neighborhood || '';
-                document.getElementById('sokak').value = addr.road || addr.street || '';
-                document.getElementById('kapiNo').value = addr.house_number || '';
-            } catch (error) {
-                console.error("Adres alınamadı:", error);
-            } finally {
-                document.getElementById('loader').style.display = 'none';
-            }
+                const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+                const d = await r.json();
+                const a = d.address;
+                document.getElementById('ilce').value = a.town || a.city_district || a.county || '';
+                document.getElementById('mahalle').value = a.suburb || a.neighborhood || '';
+                document.getElementById('sokak').value = a.road || '';
+                document.getElementById('kapiNo').value = a.house_number || '';
+            } catch(e) { console.log(e); }
+            finally { document.getElementById('loader').style.display = 'none'; }
         }
 
         function openTKGM() {
             const lat = document.getElementById('lat').value;
             const lng = document.getElementById('lng').value;
+            if(!lat) return alert("Konum seçin.");
+            if(confirm("TKGM açılacak.")) window.open(`https://parselsorgu.tkgm.gov.tr/#ara/cografi/${lat}/${lng}`, '_blank');
+        }
 
-            if(!lat || !lng) {
-                alert("Lütfen önce haritadan bir konum seçin.");
-                return;
-            }
-            // Manuel Bakma Linki
-            const tkgmUrl = `https://parselsorgu.tkgm.gov.tr/#ara/cografi/${lat}/${lng}`;
-            if(confirm("TKGM Parsel Sorgu sayfası yeni sekmede açılacak.\n\nHaritada işaretli yere tıklayarak Ada/Parsel bilgisini alıp forma manuel giriniz.")) {
-                window.open(tkgmUrl, '_blank');
+        function autoDownload(input) {
+            if (input.files[0]) {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(input.files[0]);
+                a.download = `Saha_Foto_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                const t = document.getElementById("toast"); t.className = "show";
+                setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
             }
         }
 
-        // --- PDF OLUŞTURMA ---
         async function generatePDF() {
-            const lat = document.getElementById('lat').value;
-            const recordId = document.getElementById('recordId').value;
-            
-            if (!lat) { alert("Lütfen haritadan bir konum seçin!"); return; }
-            if (!recordId) { alert("ID yok. Lütfen haritaya tıklayın."); return; }
+            const id = document.getElementById('recordId').value;
+            if (!id) return alert("ID yok.");
 
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "PDF Hazırlanıyor...";
+            document.getElementById('loaderText').innerText = "PDF Oluşturuluyor...";
 
-            if (marker) {
-                map.setView(marker.getLatLng(), 18);
-                await new Promise(resolve => setTimeout(resolve, 800)); 
-            }
+            if (marker) { map.setView(marker.getLatLng(), 18); await new Promise(r => setTimeout(r, 1000)); }
 
-            const mapElement = document.getElementById('map');
-            let mapDataUrl = "";
             try {
-                const canvas = await html2canvas(mapElement, { 
-                    useCORS: true, 
-                    scale: 2,
-                    allowTaint: true,
-                    ignoreElements: (node) => node.classList.contains('leaflet-control')
-                });
-                mapDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            } catch (e) {
-                console.log("Harita hatası", e);
-            }
+                const canvas = await html2canvas(document.getElementById('map'), { useCORS: true, scale: 2 });
+                document.getElementById('pdf-map-image').src = canvas.toDataURL('image/jpeg', 0.85);
+            } catch(e) { console.log(e); }
 
-            document.getElementById('pdf-map-image').src = mapDataUrl;
-            document.getElementById('pdf-id-display').innerText = "ID: " + recordId;
+            document.getElementById('pdf-id-display').innerText = "ID: " + id;
+            document.getElementById('pdf-record-id').innerText = id;
             document.getElementById('pdf-date').innerText = new Date().toLocaleString('tr-TR');
-            document.getElementById('pdf-ilce').innerText = document.getElementById('ilce').value;
-            document.getElementById('pdf-mahalle').innerText = document.getElementById('mahalle').value;
-            document.getElementById('pdf-sokak').innerText = document.getElementById('sokak').value;
-            document.getElementById('pdf-kapi').innerText = document.getElementById('kapiNo').value;
-            document.getElementById('pdf-ada-parsel').innerText = `${document.getElementById('ada').value} / ${document.getElementById('parsel').value}`;
-            document.getElementById('pdf-coords').innerText = lat + ", " + document.getElementById('lng').value;
+            document.getElementById('pdf-ilce-mahalle').innerText = document.getElementById('ilce').value + " / " + document.getElementById('mahalle').value;
+            document.getElementById('pdf-adres').innerText = document.getElementById('sokak').value + " No:" + document.getElementById('kapiNo').value;
+            document.getElementById('pdf-ada-parsel').innerText = document.getElementById('ada').value + " / " + document.getElementById('parsel').value;
+            document.getElementById('pdf-coords').innerText = document.getElementById('lat').value + ", " + document.getElementById('lng').value;
 
-            await placeImageInPDF('img1', 'pdf-img-box-1');
-            await placeImageInPDF('img2', 'pdf-img-box-2');
+            await fillPdfImg('img1', 'pdf-img-box-1');
+            await fillPdfImg('img2', 'pdf-img-box-2');
 
             const element = document.getElementById('printable-area');
             element.style.position = 'static'; 
             
             const opt = {
-                margin:       15, 
-                filename:     `Rapor_${recordId}.pdf`,
+                margin:       5, // Kenar boşluğu 5mm (Tek sayfa için)
+                filename:     `Rapor_${id}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -631,175 +547,111 @@
             });
         }
 
-        async function placeImageInPDF(inputId, boxId) {
+        async function fillPdfImg(inputId, boxId) {
             const input = document.getElementById(inputId);
             const box = document.getElementById(boxId);
             box.innerHTML = "";
-
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                const dataUrl = await new Promise(resolve => {
-                    reader.onload = e => resolve(e.target.result);
-                    reader.readAsDataURL(input.files[0]);
-                });
-                box.innerHTML = `<img src="${dataUrl}" class="pdf-photo-img">`;
-            } else {
-                box.innerHTML = `<span style="color:#ccc; font-size:12px;">Fotoğraf Yok</span>`;
-            }
+            if (input.files[0]) {
+                const r = new FileReader();
+                const d = await new Promise(res => { r.onload = e => res(e.target.result); r.readAsDataURL(input.files[0]); });
+                box.innerHTML = `<img src="${d}" class="pdf-photo-img">`;
+            } else { box.innerHTML = "<span style='color:#ccc; font-size:10px;'>Yok</span>"; }
         }
 
-        // --- LİSTE VE VERİ YÖNETİMİ ---
         function handleFormAction() {
             const lat = document.getElementById('lat').value;
-            if (!lat) { alert("Konum seçilmedi!"); return; }
-
-            const currentRecordId = document.getElementById('recordId').value || generateRecordID();
-
+            if (!lat) return alert("Konum seçin.");
+            
             const formData = {
-                recordId: currentRecordId, 
+                id: Date.now(),
+                recordId: document.getElementById('recordId').value || generateRecordID(),
                 ilce: document.getElementById('ilce').value,
                 mahalle: document.getElementById('mahalle').value,
                 sokak: document.getElementById('sokak').value,
                 kapiNo: document.getElementById('kapiNo').value,
                 ada: document.getElementById('ada').value,
                 parsel: document.getElementById('parsel').value,
-                lat: lat,
-                lng: document.getElementById('lng').value,
-                tarih: new Date().toLocaleString('tr-TR')
+                lat: lat, lng: document.getElementById('lng').value
             };
 
-            if (editingId !== null) {
-                const index = savedLocations.findIndex(loc => loc.id === editingId);
-                if (index !== -1) {
-                    formData.recordId = savedLocations[index].recordId; 
-                    savedLocations[index] = { ...savedLocations[index], ...formData };
-                    savedLocations[index].id = editingId;
-                }
+            if (editingId) {
+                const idx = savedLocations.findIndex(x => x.id === editingId);
+                formData.recordId = savedLocations[idx].recordId;
+                formData.id = editingId;
+                savedLocations[idx] = formData;
                 resetFormMode();
             } else {
-                const newLocation = { id: Date.now(), ...formData };
-                savedLocations.push(newLocation);
+                savedLocations.push(formData);
             }
-            
             saveData();
-            renderTable();
         }
 
-        function saveData() {
-            localStorage.setItem('fieldData', JSON.stringify(savedLocations));
-            renderTable();
-        }
+        function saveData() { localStorage.setItem('fieldData', JSON.stringify(savedLocations)); renderTable(); }
 
         function editItem(id) {
-            const item = savedLocations.find(loc => loc.id === id);
-            if (!item) return;
-
-            document.getElementById('recordId').value = item.recordId; 
-            document.getElementById('ilce').value = item.ilce;
-            document.getElementById('mahalle').value = item.mahalle;
-            document.getElementById('sokak').value = item.sokak;
-            document.getElementById('kapiNo').value = item.kapiNo;
-            document.getElementById('ada').value = item.ada || "";
-            document.getElementById('parsel').value = item.parsel || "";
-            document.getElementById('lat').value = item.lat;
-            document.getElementById('lng').value = item.lng;
-
-            updateMarker(parseFloat(item.lat), parseFloat(item.lng));
-            map.setView([item.lat, item.lng], 18);
-
+            const l = savedLocations.find(x => x.id === id);
             editingId = id;
-            const btn = document.getElementById('mainBtn');
-            btn.innerHTML = '<i class="fas fa-save"></i> Değişiklikleri Kaydet';
-            btn.className = 'btn btn-update';
-            document.getElementById('formArea').classList.add('editing-mode');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('recordId').value = l.recordId;
+            document.getElementById('ilce').value = l.ilce;
+            document.getElementById('mahalle').value = l.mahalle;
+            document.getElementById('sokak').value = l.sokak;
+            document.getElementById('kapiNo').value = l.kapiNo;
+            document.getElementById('ada').value = l.ada;
+            document.getElementById('parsel').value = l.parsel;
+            updateMarker(parseFloat(l.lat), parseFloat(l.lng));
+            map.setView([l.lat, l.lng], 18);
+            document.getElementById('mainBtn').innerText = "Güncelle";
+            document.getElementById('mainBtn').className = "btn btn-update";
+            window.scrollTo(0, 0);
         }
 
         function resetFormMode() {
             editingId = null;
-            const btn = document.getElementById('mainBtn');
-            btn.innerHTML = '<i class="fas fa-plus-circle"></i> Bu Konumu Listeye Ekle';
-            btn.className = 'btn btn-add';
-            document.getElementById('formArea').classList.remove('editing-mode');
-            
-            document.getElementById('recordId').value = ""; 
-            document.getElementById('ilce').value = "";
-            document.getElementById('mahalle').value = "";
-            document.getElementById('sokak').value = "";
-            document.getElementById('kapiNo').value = "";
-            document.getElementById('ada').value = "";
-            document.getElementById('parsel').value = "";
-            document.getElementById('lat').value = "";
-            document.getElementById('lng').value = "";
-            document.getElementById('img1').value = "";
-            document.getElementById('img2').value = "";
-            if (marker) map.removeLayer(marker);
+            document.getElementById('mainBtn').innerText = "Listeye Ekle";
+            document.getElementById('mainBtn').className = "btn btn-add";
+            ['recordId','ilce','mahalle','sokak','kapiNo','ada','parsel','lat','lng','img1','img2'].forEach(id => document.getElementById(id).value = "");
+            if(marker) map.removeLayer(marker);
         }
 
         function deleteItem(id) {
-            if(confirm("Silmek istediğine emin misin?")) {
-                savedLocations = savedLocations.filter(loc => loc.id !== id);
-                saveData();
-                if (editingId === id) resetFormMode();
-            }
+            if(confirm("Silinsin mi?")) { savedLocations = savedLocations.filter(x => x.id !== id); saveData(); }
         }
 
         function clearAllData() {
-            if(confirm("Tüm kayıtlar silinecek!")) {
-                savedLocations = [];
-                localStorage.removeItem('fieldData');
-                renderTable();
-                resetFormMode();
-            }
+            if(confirm("Hepsi silinsin mi?")) { savedLocations = []; saveData(); resetFormMode(); }
         }
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
-            const emptyMsg = document.getElementById('emptyMsg');
-            const badge = document.getElementById('count-badge');
             tbody.innerHTML = "";
-            
-            if (savedLocations.length === 0) {
-                if(emptyMsg) emptyMsg.style.display = 'block';
-                badge.innerText = "0";
-                return;
-            }
-            if(emptyMsg) emptyMsg.style.display = 'none';
-            badge.innerText = savedLocations.length;
+            document.getElementById('emptyMsg').style.display = savedLocations.length ? 'none' : 'block';
+            document.getElementById('count-badge').innerText = savedLocations.length;
 
-            [...savedLocations].reverse().forEach(loc => {
-                const adaParselText = (loc.ada || loc.parsel) ? `<br><small style="color:#666">Ada: ${loc.ada} / Parsel: ${loc.parsel}</small>` : '';
-                
-                const row = `<tr>
-                    <td style="font-weight:bold; color:#2563eb;">${loc.recordId}</td>
-                    <td>${loc.ilce} / ${loc.mahalle}</td>
-                    <td>${loc.sokak} No:${loc.kapiNo} ${adaParselText}</td>
+            [...savedLocations].reverse().forEach(l => {
+                tbody.innerHTML += `<tr>
+                    <td><b>${l.recordId}</b></td>
+                    <td>${l.mahalle}</td>
+                    <td>${l.ada}/${l.parsel}</td>
                     <td style="text-align:center;">
-                        <button class="action-btn edit-btn" onclick="editItem(${loc.id})"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="deleteItem(${loc.id})"><i class="fas fa-trash-alt"></i></button>
+                        <button class="action-btn edit-btn" onclick="editItem(${l.id})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="deleteItem(${l.id})"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 </tr>`;
-                tbody.innerHTML += row;
             });
         }
 
         function exportToExcel() {
-            if (savedLocations.length === 0) { alert("Liste boş!"); return; }
-            const excelData = savedLocations.map(loc => ({
-                "Kayıt ID": loc.recordId, 
-                "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
-                "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
-                "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
-            }));
-            const ws = XLSX.utils.json_to_sheet(excelData);
+            if (!savedLocations.length) return alert("Liste boş.");
+            const ws = XLSX.utils.json_to_sheet(savedLocations);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Veriler");
-            XLSX.writeFile(wb, `Saha_Veri_${new Date().toISOString().slice(0,10)}.xlsx`);
+            XLSX.writeFile(wb, "Saha_Verileri.xlsx");
         }
 
         window.onload = () => {
-            initMap();
-            renderTable();
+            initMap(); renderTable();
+            document.getElementById('img1').addEventListener('change', (e) => autoDownload(e.target));
+            document.getElementById('img2').addEventListener('change', (e) => autoDownload(e.target));
         };
     </script>
 </body>
