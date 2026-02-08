@@ -381,7 +381,6 @@
 
         <div class="pdf-section-title">2. ADRES VE KONUM DETAYLARI</div>
         <table class="pdf-info-table">
-            <tr><td class="pdf-label">Kayıt ID</td><td id="pdf-record-id"></td></tr>
             <tr><td class="pdf-label">Tarih</td><td id="pdf-date"></td></tr>
             <tr><td class="pdf-label">İlçe</td><td id="pdf-ilce"></td></tr>
             <tr><td class="pdf-label">Mahalle</td><td id="pdf-mahalle"></td></tr>
@@ -604,7 +603,6 @@
 
             document.getElementById('pdf-map-image').src = mapDataUrl;
             document.getElementById('pdf-id-display').innerText = "ID: " + recordId;
-            document.getElementById('pdf-record-id').innerText = recordId;
             document.getElementById('pdf-date').innerText = new Date().toLocaleString('tr-TR');
             document.getElementById('pdf-ilce').innerText = document.getElementById('ilce').value;
             document.getElementById('pdf-mahalle').innerText = document.getElementById('mahalle').value;
