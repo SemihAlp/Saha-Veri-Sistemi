@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi v8.1</title>
+    <title>Saha Veri Sistemi v8.2</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -186,15 +186,15 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* --- PDF İÇİN BASE KOD DÜZENİ (v6.9 STANDARDI) --- */
+        /* --- PDF İÇİN OPTİMİZE DÜZEN --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
             background: white;
-            /* Base Kod Ayarı: */
-            padding: 10px 30px; 
+            /* YENİ AYAR: Üst/Alt 30px, Sol/Sağ 30px */
+            padding: 30px 30px; 
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
@@ -238,9 +238,9 @@
             border-left: 4px solid #cc0000;
         }
 
-        /* Harita Yüksekliği: Base kod ayarı (360px) */
+        /* Harita Yüksekliği: 340px (Dengeli) */
         .pdf-map-container {
-            height: 360px; 
+            height: 340px; 
             border: 1px solid #ccc;
             margin-bottom: 8px; 
             display: flex; justify-content: center; align-items: center;
@@ -254,7 +254,7 @@
         .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
-        /* Fotoğraflar: Base kod ayarı (260px) */
+        /* Fotoğraflar: Yükseklik 240px (Dengeli) */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -263,7 +263,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 260px; 
+            height: 240px; 
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -289,7 +289,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v8.1</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v8.2</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
