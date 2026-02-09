@@ -186,14 +186,14 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* --- PDF İÇİN KOMPAKT DÜZEN --- */
+        /* --- PDF İÇİN OPTİMİZE DÜZEN (TEK SAYFA + YÜKSEK GÖRSELLER) --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
             background: white;
-            padding: 15px 30px; 
+            padding: 10px 30px; /* Üst boşluk biraz azaltıldı */
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
@@ -237,20 +237,23 @@
             border-left: 4px solid #cc0000;
         }
 
+        /* Harita Yüksekliği: 360px (ARTIRILDI - Daha Dik) */
         .pdf-map-container {
-            height: 300px; 
+            height: 360px; 
             border: 1px solid #ccc;
-            margin-bottom: 10px; 
+            margin-bottom: 8px; 
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             background-color: #eee;
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        .pdf-info-table { border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
+        /* Tablo: Sıkılaştırıldı */
+        .pdf-info-table { border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
         .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
+        /* Fotoğraflar: Yükseklik 260px (ARTIRILDI - Daha Dik) */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -259,7 +262,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 210px; 
+            height: 260px; 
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -537,18 +540,19 @@
                 const isFreshCapture = diff < 120000; 
 
                 if (isFreshCapture) {
-                    // ID'yi al
+                    // --- İSİMLENDİRME DÜZELTMESİ ---
                     let recordId = document.getElementById('recordId').value;
-                    if (!recordId) recordId = "Saha_Veri"; // Fallback
+                    if (!recordId) recordId = "Saha_Veri"; 
 
-                    // ID + Input Adı (Çakışmayı önlemek için)
-                    const fileName = `${recordId}_${input.id}.jpg`;
+                    // Hangi input olduğunu bul (img1 veya img2)
+                    let suffix = input.id === 'img1' ? '1' : '2';
+                    const fileName = `${recordId}-Saha_Gorseli_${suffix}.jpg`;
 
                     const url = URL.createObjectURL(file);
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = fileName; // <--- ID İle İndirme
+                    a.download = fileName; // <--- Yeni İsim
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -593,9 +597,10 @@
                 const element = document.getElementById('printable-area');
                 element.style.position = 'static'; 
                 
+                // --- PDF İSİMLENDİRME DÜZELTMESİ ---
                 const opt = {
                     margin:       0, 
-                    filename:     `Rapor_${id}.pdf`,
+                    filename:     `${id}_Rapor.pdf`, // <--- ID_Rapor.pdf
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, scrollY: 0, useCORS: true },
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
