@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi v6.5 (Tek Sayfa Garantili)</title>
+    <title>Saha Veri Sistemi v6.6</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -12,11 +12,16 @@
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1e40af;
             --success: #16a34a;
+            --success-dark: #15803d;
             --danger: #dc2626;
+            --danger-dark: #b91c1c;
             --warning: #f59e0b;
+            --warning-dark: #b45309;
             --dark: #1f2937;
             --light: #f3f4f6;
+            --gray-dark: #4b5563;
         }
 
         html, body {
@@ -54,7 +59,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        #count-badge:hover { transform: scale(1.1); }
+        #count-badge:hover { background: var(--primary-dark); transform: scale(1.1); }
 
         #map {
             height: 400px;
@@ -120,6 +125,7 @@
         .ada-parsel-container { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-end; }
         .photo-upload-area { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
 
+        /* --- BUTONLAR --- */
         .btn {
             width: 100%; padding: 12px; border: none; border-radius: 8px;
             color: white; font-weight: bold; cursor: pointer;
@@ -132,17 +138,26 @@
         .btn:hover { filter: brightness(110%); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
 
         .btn-pdf { background-color: var(--danger); margin-bottom: 15px; }
+        .btn-pdf:hover { background-color: var(--danger-dark); }
+
         .btn-add { background-color: var(--primary); margin-bottom: 20px; }
+        .btn-add:hover { background-color: var(--primary-dark); }
+
         .btn-update { background-color: var(--warning); color: #fff; margin-bottom: 20px; }
+        .btn-update:hover { background-color: var(--warning-dark); }
+
         .btn-excel { background-color: var(--success); margin-top: 10px; }
+        .btn-excel:hover { background-color: var(--success-dark); }
+
         .btn-clear { background-color: #64748b; margin-top: 5px; font-size: 12px; padding: 10px;}
+        .btn-clear:hover { background-color: var(--gray-dark); }
         
         .btn-parcel {
             background-color: var(--success); width: auto; white-space: nowrap;
             height: 38px; padding: 0 15px; margin-bottom: 1px; font-size: 12px;
             transition: all 0.3s ease;
         }
-        .btn-parcel:hover { transform: translateY(-2px); }
+        .btn-parcel:hover { background-color: var(--success-dark); transform: translateY(-2px); }
 
         .list-container { margin-top: 10px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -171,14 +186,14 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* --- PDF İÇİN KOMPAKT DÜZEN (TEK SAYFA GARANTİSİ) --- */
+        /* --- PDF İÇİN KOMPAKT DÜZEN --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
             background: white;
-            padding: 15px 30px; /* Kenar boşlukları azaltıldı */
+            padding: 15px 30px; 
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
@@ -195,7 +210,7 @@
 
         .pdf-header {
             text-align: center; border-bottom: 2px solid #cc0000;
-            padding-bottom: 5px; margin-bottom: 8px; /* Azaltıldı */
+            padding-bottom: 5px; margin-bottom: 8px;
             margin-top: 5px;
             position: relative;
         }
@@ -222,7 +237,6 @@
             border-left: 4px solid #cc0000;
         }
 
-        /* Harita Yüksekliği: 300px (Yer kazanmak için ideal) */
         .pdf-map-container {
             height: 300px; 
             border: 1px solid #ccc;
@@ -233,12 +247,10 @@
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Tablo: Sıkılaştırıldı */
-        .pdf-info-table { border-collapse: collapse; margin-bottom: 10px; font-size: 10px; /* Font Küçültüldü */ }
-        .pdf-info-table td { border: 1px solid #999; padding: 4px; /* Padding Azaltıldı */ }
+        .pdf-info-table { border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
+        .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
-        /* Fotoğraflar: Yükseklik 210px */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -247,7 +259,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 210px; /* Daha kısa tutuldu ki taşmasın */
+            height: 210px; 
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -273,7 +285,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v6.5</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v6.6</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
@@ -525,11 +537,18 @@
                 const isFreshCapture = diff < 120000; 
 
                 if (isFreshCapture) {
+                    // ID'yi al
+                    let recordId = document.getElementById('recordId').value;
+                    if (!recordId) recordId = "Saha_Veri"; // Fallback
+
+                    // ID + Input Adı (Çakışmayı önlemek için)
+                    const fileName = `${recordId}_${input.id}.jpg`;
+
                     const url = URL.createObjectURL(file);
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = `Saha_Foto_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`;
+                    a.download = fileName; // <--- ID İle İndirme
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
