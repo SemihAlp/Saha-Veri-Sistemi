@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi</title>
+    <title>Saha Veri Sistemi v8.1</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -11,7 +11,6 @@
 
     <style>
         :root {
-            /* Gündüz Modu (Varsayılan) */
             --primary: #2563eb;
             --primary-dark: #1e40af;
             --success: #16a34a;
@@ -22,77 +21,33 @@
             --warning-dark: #b45309;
             --dark: #1f2937;
             --light: #f3f4f6;
-            --bg-color: #f3f4f6;
-            --container-bg: #ffffff;
-            --text-color: #000000;
-            --input-bg: #ffffff;
-            --input-border: #cbd5e1;
-            --table-head: #f1f5f9;
-            --table-text: #475569;
-        }
-
-        /* GECE MODU RENKLERİ */
-        [data-theme="dark"] {
-            --primary: #3b82f6;
-            --primary-dark: #60a5fa;
-            --success: #22c55e;
-            --success-dark: #4ade80;
-            --danger: #ef4444;
-            --danger-dark: #f87171;
-            --warning: #f59e0b;
-            --warning-dark: #fbbf24;
-            --dark: #f8fafc; /* Başlıklar açık renk */
-            --light: #0f172a; /* Arka plan çok koyu */
-            --bg-color: #0f172a;
-            --container-bg: #1e293b;
-            --text-color: #e2e8f0;
-            --input-bg: #334155;
-            --input-border: #475569;
-            --table-head: #334155;
-            --table-text: #cbd5e1;
+            --gray-dark: #4b5563;
         }
 
         html, body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background-color: var(--light);
             font-family: 'Roboto', sans-serif;
             overflow-x: hidden;
             width: 100%;
-            transition: background-color 0.3s ease;
         }
 
         body { padding: 20px 0; }
 
         .container {
-            background: var(--container-bg);
+            background: white;
             width: 94%;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: block;
             box-sizing: border-box;
-            transition: background-color 0.3s ease;
         }
 
-        /* Başlık Alanı Düzeni */
-        .header-area {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 15px;
-        }
-
-        h2 { text-align: center; color: var(--dark); margin: 0; font-size: 20px; flex-grow: 1; }
-
-        /* Dark Mode Butonu */
-        .theme-toggle {
-            background: none; border: none; cursor: pointer; font-size: 20px; color: var(--dark);
-            padding: 5px; transition: transform 0.3s;
-        }
-        .theme-toggle:hover { transform: rotate(20deg); }
+        h2 { text-align: center; color: var(--dark); margin-top: 0; font-size: 22px; }
 
         #count-badge {
             background: var(--primary);
@@ -103,7 +58,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-left: 10px;
         }
         #count-badge:hover { background: var(--primary-dark); transform: scale(1.1); }
 
@@ -142,41 +96,34 @@
             gap: 12px;
             margin-bottom: 20px;
             padding: 15px;
-            background-color: var(--bg-color); /* Dark mode uyumlu */
+            background-color: #f8fafc;
             border-radius: 12px;
-            border: 1px solid var(--input-border);
+            border: 1px solid #e2e8f0;
         }
 
         @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 
         .editing-mode { background-color: #fff7ed !important; border-color: var(--warning) !important; }
-        [data-theme="dark"] .editing-mode { background-color: #451a03 !important; border-color: var(--warning) !important; }
-
         .input-group { display: flex; flex-direction: column; width: 100%; }
         
         label {
-            font-size: 11px; color: var(--text-color); margin-bottom: 4px;
-            font-weight: 700; text-transform: uppercase; opacity: 0.7;
+            font-size: 11px; color: #64748b; margin-bottom: 4px;
+            font-weight: 700; text-transform: uppercase;
         }
 
         input {
-            padding: 10px; 
-            border: 1px solid var(--input-border); 
-            border-radius: 6px;
+            padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;
             font-size: 14px; width: 100%; box-sizing: border-box;
-            background-color: var(--input-bg);
-            color: var(--text-color);
         }
 
         #recordId {
-            background-color: rgba(37, 99, 235, 0.1); 
-            color: var(--primary);
+            background-color: #e0e7ff; color: var(--primary);
             font-weight: bold; letter-spacing: 1px;
-            border-color: var(--primary); text-align: center;
+            border-color: #a5b4fc; text-align: center;
         }
 
         .ada-parsel-container { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-end; }
-        .photo-upload-area { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; border-top: 1px solid var(--input-border); padding-top: 15px; }
+        .photo-upload-area { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
 
         /* --- BUTONLAR --- */
         .btn {
@@ -212,13 +159,10 @@
         }
         .btn-parcel:hover { background-color: var(--success-dark); transform: translateY(-2px); }
 
-        /* Liste Alanı */
-        .list-container { margin-top: 10px; border-top: 2px solid var(--input-border); padding-top: 15px; }
-        .list-container h3 { color: var(--dark); }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 12px; color: var(--text-color); }
-        th { text-align: left; padding: 8px; background: var(--table-head); color: var(--table-text); }
-        td { padding: 8px; border-bottom: 1px solid var(--input-border); }
+        .list-container { margin-top: 10px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 8px; background: #f1f5f9; color: #475569; }
+        td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
         
         .action-btn { border: none; background: none; cursor: pointer; font-size: 16px; margin: 0 5px; transition: transform 0.2s; }
         .action-btn:hover { transform: scale(1.3); }
@@ -231,8 +175,6 @@
             justify-content: center; align-items: center; z-index: 9999;
             color: var(--primary); font-weight: bold;
         }
-        /* Gece modunda loader arka planı */
-        [data-theme="dark"] #loader { background: rgba(15, 23, 42, 0.95); }
 
         #toast {
             visibility: hidden; min-width: 250px; background-color: #333;
@@ -244,13 +186,14 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* --- PDF İÇİN OPTİMİZE DÜZEN (NOT ALANI + TEK SAYFA) --- */
+        /* --- PDF İÇİN BASE KOD DÜZENİ (v6.9 STANDARDI) --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
             background: white;
+            /* Base Kod Ayarı: */
             padding: 10px 30px; 
             font-family: 'Roboto', sans-serif;
             color: #000;
@@ -295,9 +238,9 @@
             border-left: 4px solid #cc0000;
         }
 
-        /* Harita: 330px (Not alanına yer açmak için biraz kısıldı) */
+        /* Harita Yüksekliği: Base kod ayarı (360px) */
         .pdf-map-container {
-            height: 330px; 
+            height: 360px; 
             border: 1px solid #ccc;
             margin-bottom: 8px; 
             display: flex; justify-content: center; align-items: center;
@@ -311,7 +254,7 @@
         .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
-        /* Fotoğraflar: Yükseklik 270px (Dengeli) */
+        /* Fotoğraflar: Base kod ayarı (260px) */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -320,7 +263,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 270px; 
+            height: 260px; 
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -345,11 +288,8 @@
     <div id="toast">Fotoğraf cihazınıza indirildi!</div>
 
     <div class="container">
-        <div class="header-area">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Gece/Gündüz Modu">
-                <i class="fas fa-moon"></i>
-            </button>
-            <h2>📍 Saha Veri Sistemi</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v8.1</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
@@ -438,7 +378,7 @@
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
-                <div id="emptyMsg" style="text-align:center; color: var(--table-text); padding:20px;">Liste boş.</div>
+                <div id="emptyMsg" style="text-align:center; color:#999; padding:20px;">Liste boş.</div>
             </div>
         </div>
 
@@ -493,23 +433,6 @@
         let map, marker;
         let savedLocations = JSON.parse(localStorage.getItem('fieldData')) || [];
         let editingId = null;
-
-        // GECE MODU FONKSİYONU
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute("data-theme");
-            const newTheme = current === "dark" ? "light" : "dark";
-            document.documentElement.setAttribute("data-theme", newTheme);
-            localStorage.setItem("theme", newTheme);
-            
-            // İkonu değiştir
-            const icon = document.querySelector(".theme-toggle i");
-            icon.className = newTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
-            icon.style.color = newTheme === "dark" ? "#f59e0b" : "#1f2937";
-        }
-
-        // Başlangıçta tema kontrolü
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
 
         function generateRecordID() {
             const now = new Date();
@@ -670,7 +593,7 @@
                 document.getElementById('pdf-ilce-mahalle').innerText = document.getElementById('ilce').value + " / " + document.getElementById('mahalle').value;
                 document.getElementById('pdf-adres').innerText = document.getElementById('sokak').value + " No:" + document.getElementById('kapiNo').value;
                 document.getElementById('pdf-ada-parsel').innerText = document.getElementById('ada').value + " / " + document.getElementById('parsel').value;
-                // AÇIKLAMA EKLEME
+                // AÇIKLAMA PDF'E YAZILIYOR
                 document.getElementById('pdf-aciklama').innerText = document.getElementById('aciklama').value;
                 document.getElementById('pdf-coords').innerText = document.getElementById('lat').value + ", " + document.getElementById('lng').value;
 
@@ -722,7 +645,7 @@
                 kapiNo: document.getElementById('kapiNo').value,
                 ada: document.getElementById('ada').value,
                 parsel: document.getElementById('parsel').value,
-                aciklama: document.getElementById('aciklama').value, // Yeni
+                aciklama: document.getElementById('aciklama').value, // Açıklama kaydediliyor
                 lat: lat, lng: document.getElementById('lng').value,
                 tarih: new Date().toLocaleString('tr-TR')
             };
@@ -751,7 +674,7 @@
             document.getElementById('kapiNo').value = l.kapiNo;
             document.getElementById('ada').value = l.ada;
             document.getElementById('parsel').value = l.parsel;
-            document.getElementById('aciklama').value = l.aciklama || ""; // Yeni
+            document.getElementById('aciklama').value = l.aciklama || ""; // Açıklama geri yükleniyor
             updateMarker(parseFloat(l.lat), parseFloat(l.lng));
             map.setView([l.lat, l.lng], 18);
             document.getElementById('mainBtn').innerText = "Güncelle";
@@ -800,7 +723,7 @@
                 "Kayıt ID": loc.recordId,
                 "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
                 "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
-                "Açıklama": loc.aciklama || "", // Yeni
+                "Açıklama": loc.aciklama || "", // Excel'e eklendi
                 "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
             }));
             const ws = XLSX.utils.json_to_sheet(excelData);
@@ -811,11 +734,6 @@
 
         window.onload = () => {
             initMap(); renderTable();
-            // İkonu güncelle (sayfa yenilenince)
-            if(savedTheme === "dark"){
-                const icon = document.querySelector(".theme-toggle i");
-                if(icon) { icon.className = "fas fa-sun"; icon.style.color = "#f59e0b"; }
-            }
             document.getElementById('img1').addEventListener('change', (e) => autoDownload(e.target));
             document.getElementById('img2').addEventListener('change', (e) => autoDownload(e.target));
         };
