@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi</title>
+    <title>Saha Veri Sistemi v6.9</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -193,7 +193,7 @@
             top: 0;
             width: 210mm; 
             background: white;
-            padding: 10px 30px; /* Üst boşluk biraz azaltıldı */
+            padding: 10px 30px; 
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
@@ -237,7 +237,7 @@
             border-left: 4px solid #cc0000;
         }
 
-        /* Harita Yüksekliği: 360px (ARTIRILDI - Daha Dik) */
+        /* Harita Yüksekliği: 300px (Kısaltıldı - Yer Açmak İçin) */
         .pdf-map-container {
             height: 360px; 
             border: 1px solid #ccc;
@@ -248,12 +248,12 @@
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Tablo: Sıkılaştırıldı */
+        /* Tablo */
         .pdf-info-table { border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
         .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
-        /* Fotoğraflar: Yükseklik 260px (ARTIRILDI - Daha Dik) */
+        /* Fotoğraflar: Yükseklik 290px (BÜYÜTÜLDÜ) */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -262,7 +262,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 260px; 
+            height: 320px; /* Çok daha yüksek */
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -288,7 +288,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v6.9</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
@@ -540,11 +540,9 @@
                 const isFreshCapture = diff < 120000; 
 
                 if (isFreshCapture) {
-                    // --- İSİMLENDİRME DÜZELTMESİ ---
                     let recordId = document.getElementById('recordId').value;
                     if (!recordId) recordId = "Saha_Veri"; 
 
-                    // Hangi input olduğunu bul (img1 veya img2)
                     let suffix = input.id === 'img1' ? '1' : '2';
                     const fileName = `${recordId}-Saha_Gorseli_${suffix}.jpg`;
 
@@ -552,7 +550,7 @@
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = fileName; // <--- Yeni İsim
+                    a.download = fileName;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -597,10 +595,9 @@
                 const element = document.getElementById('printable-area');
                 element.style.position = 'static'; 
                 
-                // --- PDF İSİMLENDİRME DÜZELTMESİ ---
                 const opt = {
                     margin:       0, 
-                    filename:     `${id}_Rapor.pdf`, // <--- ID_Rapor.pdf
+                    filename:     `${id}_Rapor.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, scrollY: 0, useCORS: true },
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
