@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi v6.4 (Galeri Fix)</title>
+    <title>Saha Veri Sistemi v6.5 (Tek Sayfa Garantili)</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -17,7 +17,6 @@
             --warning: #f59e0b;
             --dark: #1f2937;
             --light: #f3f4f6;
-            --gray-dark: #4b5563;
         }
 
         html, body {
@@ -172,14 +171,14 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* --- PDF DÜZENİ --- */
+        /* --- PDF İÇİN KOMPAKT DÜZEN (TEK SAYFA GARANTİSİ) --- */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
             background: white;
-            padding: 20px 40px;
+            padding: 15px 30px; /* Kenar boşlukları azaltıldı */
             font-family: 'Roboto', sans-serif;
             color: #000;
             box-sizing: border-box;
@@ -189,27 +188,27 @@
         }
         
         .pdf-header, .pdf-section-title, .pdf-map-container, .pdf-info-table, .pdf-photos {
-            width: 96% !important;
+            width: 98% !important;
             margin-left: auto !important;
             margin-right: auto !important;
         }
 
         .pdf-header {
             text-align: center; border-bottom: 2px solid #cc0000;
-            padding-bottom: 5px; margin-bottom: 10px;
-            margin-top: 10px;
+            padding-bottom: 5px; margin-bottom: 8px; /* Azaltıldı */
+            margin-top: 5px;
             position: relative;
         }
-        .pdf-title { font-size: 20px; font-weight: bold; color: #cc0000; margin: 0; }
-        .pdf-subtitle { font-size:10px; color:#555; margin-top: 2px; }
+        .pdf-title { font-size: 18px; font-weight: bold; color: #cc0000; margin: 0; }
+        .pdf-subtitle { font-size: 10px; color:#555; margin-top: 2px; }
 
         .pdf-id-box {
             position: absolute;
             top: 0; right: 0;
             border: 1px solid #333;
-            padding: 3px 8px;
+            padding: 3px 6px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             background-color: #f3f4f6;
             color: #333;
         }
@@ -217,26 +216,29 @@
         .pdf-section-title {
             font-weight: bold; 
             margin-bottom: 3px; 
-            font-size: 13px; 
+            font-size: 12px; 
             background: #f3f4f6; 
             padding: 4px;
             border-left: 4px solid #cc0000;
         }
 
+        /* Harita Yüksekliği: 300px (Yer kazanmak için ideal) */
         .pdf-map-container {
-            height: 400px; 
+            height: 300px; 
             border: 1px solid #ccc;
-            margin-bottom: 15px; 
+            margin-bottom: 10px; 
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             background-color: #eee;
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        .pdf-info-table { border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
-        .pdf-info-table td { border: 1px solid #999; padding: 8px; }
-        .pdf-label { font-weight: bold; background-color: #f9fafb; width: 140px; }
+        /* Tablo: Sıkılaştırıldı */
+        .pdf-info-table { border-collapse: collapse; margin-bottom: 10px; font-size: 10px; /* Font Küçültüldü */ }
+        .pdf-info-table td { border: 1px solid #999; padding: 4px; /* Padding Azaltıldı */ }
+        .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
+        /* Fotoğraflar: Yükseklik 210px */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -245,7 +247,7 @@
         }
         .pdf-photo-box {
             width: 49%; 
-            height: 280px; 
+            height: 210px; /* Daha kısa tutuldu ki taşmasın */
             border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa;
@@ -271,7 +273,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v6.4</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v6.5</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
