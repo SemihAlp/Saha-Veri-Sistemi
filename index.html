@@ -50,7 +50,7 @@
             --input-bg: #0f172a;
             --input-text: #f8fafc;
             --table-head-bg: #0f172a;
-            --table-row-even: #253045; /* Ekranda görünen koyu satır */
+            --table-row-even: #253045;
             --shadow-color: rgba(0, 0, 0, 0.4);
         }
 
@@ -81,19 +81,23 @@
 
         /* --- BAŞLIK ALANI --- */
         .app-header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Sol - Orta - Sağ */
             align-items: center;
             margin-bottom: 20px;
             border-bottom: 2px solid var(--bg-body);
             padding-bottom: 15px;
         }
 
-        .header-left { display: flex; align-items: center; gap: 15px; }
+        .app-header h2 { 
+            margin: 0; 
+            color: var(--text-main); 
+            font-size: 20px; 
+            font-weight: 700; 
+            text-align: center;
+            white-space: nowrap;
+        }
 
-        .app-header h2 { margin: 0; color: var(--text-main); font-size: 20px; font-weight: 700; }
-
-        /* Gece Modu Butonu */
         .theme-toggle-btn {
             background: transparent;
             border: 2px solid var(--border-color);
@@ -102,6 +106,7 @@
             border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; transition: all 0.3s ease;
+            justify-self: start;
         }
         .theme-toggle-btn:hover { background-color: var(--input-bg); border-color: var(--primary); color: var(--primary); }
 
@@ -111,6 +116,7 @@
             font-size: 13px; font-weight: 600;
             cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: transform 0.2s;
+            justify-self: end;
         }
         #count-badge:active { transform: scale(0.95); }
 
@@ -183,8 +189,10 @@
         .btn:active { transform: scale(0.98); box-shadow: none; }
         .btn-pdf { background-color: var(--danger); }
         .btn-pdf:hover { background-color: var(--danger-hover); }
+        
         .btn-add { background-color: var(--primary); font-size: 16px; padding: 16px; }
-        .btn-add:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn-add:hover { background-color: var(--primary-hover); }
+        
         .btn-update { background-color: var(--warning); color: #fff; }
         .btn-update:hover { filter: brightness(90%); }
         .btn-excel { background-color: var(--success); margin-top: 15px; }
@@ -201,34 +209,40 @@
         }
         .btn-parcel:hover { background-color: var(--success-hover); }
 
-        /* --- LİSTE --- */
+        /* --- LİSTE VE EXCEL BUTONU --- */
         .list-container { margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; }
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .list-header h3 { margin: 0; color: var(--text-main); font-size: 18px; }
 
+        /* Excel Getir Butonu */
         .btn-import {
-            background-color: transparent; border: 1px solid var(--success);
-            color: var(--success); padding: 8px 16px; font-size: 13px; font-weight: 600;
-            border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+            background-color: var(--success);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
             transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .btn-import:hover { background-color: rgba(16, 185, 129, 0.1); }
+        .btn-import:hover { background-color: var(--success-hover); }
 
-        /* Arayüz Tablosu */
-        #locationTable { 
+        table { 
             width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; 
             border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
         }
-        #locationTable th { 
+        th { 
             text-align: left; padding: 12px; background: var(--table-head-bg); 
             color: var(--text-light); font-weight: 600; border-bottom: 1px solid var(--border-color);
         }
-        #locationTable td { 
+        td { 
             padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main);
         }
-        #locationTable tr:last-child td { border-bottom: none; }
-        /* Arayüzdeki Zebra Efekti (Sadece ekran için) */
-        #locationTable tr:nth-child(even) { background-color: var(--table-row-even); }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) { background-color: var(--table-row-even); }
 
         .action-btn { border: none; background: none; cursor: pointer; font-size: 16px; margin: 0 6px; transition: transform 0.2s; opacity: 0.8; }
         .action-btn:hover { transform: scale(1.2); opacity: 1; }
@@ -255,15 +269,15 @@
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         /* ========================================================
-           PDF ALANI (ÖNEMLİ: KESİN DÜZELTME)
+           PDF ALANI (ÖZEL DÜZELTME - FIX)
            ======================================================== */
         #printable-area {
             position: fixed;
             left: -9999px;
             top: 0;
             width: 210mm; 
-            background: white !important; /* PDF arkaplanı hep beyaz */
-            color: black !important; /* PDF yazıları hep siyah */
+            background: white !important; 
+            color: black !important; 
             padding: 30px 30px; 
             font-family: 'Roboto', sans-serif;
             box-sizing: border-box;
@@ -286,35 +300,42 @@
         .pdf-id-box {
             position: absolute; top: 0; right: 0; border: 1px solid #333;
             padding: 3px 6px; font-weight: bold; font-size: 11px;
-            background-color: #f3f4f6 !important; color: #333 !important; /* PDF'te ID kutusu rengi sabit */
+            background-color: #f3f4f6 !important; color: #333 !important;
         }
 
         .pdf-section-title {
             font-weight: bold; margin-bottom: 3px; font-size: 12px; 
-            background: #f3f4f6 !important; /* Başlık arkaplanı hep açık gri */
+            background: #f3f4f6 !important; 
             padding: 4px; border-left: 4px solid #cc0000; color: black !important;
         }
 
         .pdf-map-container {
-            height: 340px; border: 1px solid #ccc; margin-bottom: 8px; 
+            height: 360px; border: 1px solid #ccc; margin-bottom: 8px; 
             display: flex; justify-content: center; align-items: center;
             overflow: hidden; background-color: #eee !important;
         }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* PDF TABLOSU İÇİN ÖZEL DÜZELTME */
-        .pdf-info-table { border-collapse: collapse; margin-bottom: 8px; font-size: 10px; color: black !important; width: 100%; }
-        .pdf-info-table td { 
-            border: 1px solid #999; padding: 4px; color: black !important; background-color: white !important; /* Satırlar hep beyaz */
+        /* PDF TABLOSU - SİYAH ÇERÇEVE VE BEYAZ ZEMİN ZORLAMA */
+        /* Bu bölüm PDF'teki şeffaf çizgi sorununu çözer */
+        #printable-area table,
+        #printable-area th,
+        #printable-area td {
+            border: 1px solid #000 !important; /* Simsiyah Çerçeve */
+            border-collapse: collapse !important;
+            color: #000 !important; /* Siyah Yazı */
+            background-color: #fff !important; /* Beyaz Zemin */
         }
-        .pdf-info-table tr { background-color: white !important; } /* Zebra etkisini iptal et */
+        
+        .pdf-info-table { margin-bottom: 8px; font-size: 10px; width: 100%; }
+        .pdf-info-table td { padding: 4px; }
         .pdf-label { 
-            font-weight: bold; background-color: #f9fafb !important; width: 130px; color: black !important; 
+            font-weight: bold; background-color: #f9fafb !important; width: 130px; 
         }
         
         .pdf-photos { display: flex; justify-content: space-between; gap: 2%; margin-top: 5px; }
         .pdf-photo-box {
-            width: 49%; height: 240px; border: 1px solid #ccc;
+            width: 49%; height: 260px; border: 1px solid #ccc;
             display: flex; align-items: center; justify-content: center;
             background: #fafafa !important; overflow: hidden; border-radius: 2px;
         }
@@ -332,12 +353,12 @@
 
     <div class="container">
         <div class="app-header">
-            <div class="header-left">
-                <h2>📍 Saha Veri</h2>
-                <button class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <h2>📍 Saha Veri Sistemi</h2>
+
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0 Kayıt</span>
         </div>
         
@@ -375,7 +396,7 @@
                     <label>Parsel</label>
                     <input type="text" id="parsel" placeholder="Parsel">
                 </div>
-                <button class="btn btn-parcel" onclick="openTKGM()">
+                <button class="btn btn-parcel" type="button" onclick="openTKGM()">
                     <i class="fas fa-map-marked-alt"></i> TKGM
                 </button>
             </div>
@@ -406,21 +427,21 @@
             </div>
         </div>
 
-        <button class="btn btn-pdf" onclick="generatePDF()">
+        <button class="btn btn-pdf" type="button" onclick="generatePDF()">
             <i class="fas fa-file-pdf"></i> Tek Sayfa PDF İndir
         </button>
 
-        <button id="mainBtn" class="btn btn-add" onclick="handleFormAction()">
+        <button id="mainBtn" class="btn btn-add" type="button" onclick="handleFormAction()">
             <i class="fas fa-plus-circle"></i> Listeye Ekle
         </button>
 
         <div class="list-container" id="listArea">
             <div class="list-header">
                 <h3>Kayıt Listesi</h3>
-                <button class="btn-import" onclick="document.getElementById('excelInput').click()">
+                <button class="btn-import" type="button" onclick="document.getElementById('excelInput').click()">
                     <i class="fas fa-file-import"></i> Excel Getir
                 </button>
-                <input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none" onchange="importExcel(this)">
+                <input type="file" id="excelInput" accept=".xlsx, .xls" style="opacity:0; position:absolute; z-index:-1;" onchange="importExcel(this)">
             </div>
 
             <div style="overflow-x: auto; border-radius: 8px;">
@@ -437,11 +458,11 @@
             </div>
         </div>
 
-        <button class="btn btn-excel" onclick="exportToExcel()">
+        <button class="btn btn-excel" type="button" onclick="exportToExcel()">
             <i class="fas fa-file-excel"></i> Excel İndir
         </button>
         
-        <button class="btn btn-clear" onclick="clearAllData()">
+        <button class="btn btn-clear" type="button" onclick="clearAllData()">
             <i class="fas fa-trash"></i> Tüm Verileri Temizle
         </button>
     </div>
@@ -489,11 +510,9 @@
         let savedLocations = JSON.parse(localStorage.getItem('fieldData')) || [];
         let editingId = null;
 
-        // --- TEMA YÖNETİMİ ---
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             const newTheme = currentTheme === "dark" ? "light" : "dark";
-            
             document.documentElement.setAttribute("data-theme", newTheme);
             localStorage.setItem("theme", newTheme);
             updateThemeIcon(newTheme);
@@ -502,18 +521,15 @@
         function updateThemeIcon(theme) {
             const icon = document.querySelector(".theme-toggle-btn i");
             if (theme === "dark") {
-                icon.className = "fas fa-sun";
-                icon.style.color = "#fbbf24";
+                icon.className = "fas fa-sun"; icon.style.color = "#fbbf24";
             } else {
-                icon.className = "fas fa-moon";
-                icon.style.color = "#334155";
+                icon.className = "fas fa-moon"; icon.style.color = "#334155";
             }
         }
 
         const savedTheme = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", savedTheme);
 
-        // --- HARİTA & SİSTEM ---
         function generateRecordID() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -724,7 +740,7 @@
                 kapiNo: document.getElementById('kapiNo').value,
                 ada: document.getElementById('ada').value,
                 parsel: document.getElementById('parsel').value,
-                aciklama: document.getElementById('aciklama').value, 
+                aciklama: document.getElementById('aciklama').value,
                 lat: lat, lng: document.getElementById('lng').value,
                 tarih: new Date().toLocaleString('tr-TR')
             };
@@ -801,37 +817,42 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-                if(jsonData.length > 0) {
-                    let addedCount = 0;
-                    jsonData.forEach(row => {
-                        const newRecord = {
-                            id: Date.now() + Math.random(), 
-                            recordId: row["Kayıt ID"] || generateRecordID(),
-                            ilce: row["İlçe"] || "",
-                            mahalle: row["Mahalle"] || "",
-                            sokak: row["Sokak"] || "",
-                            kapiNo: row["No"] || "",
-                            ada: row["Ada"] || "",
-                            parsel: row["Parsel"] || "",
-                            aciklama: row["Açıklama"] || "",
-                            lat: row["Enlem"] || "",
-                            lng: row["Boylam"] || "",
-                            tarih: row["Tarih"] || new Date().toLocaleString('tr-TR')
-                        };
-                        savedLocations.push(newRecord);
-                        addedCount++;
-                    });
-                    
-                    saveData();
-                    alert(addedCount + " adet kayıt başarıyla eklendi!");
-                } else {
-                    alert("Excel dosyası boş veya okunamadı.");
+                    if(jsonData.length > 0) {
+                        let addedCount = 0;
+                        jsonData.forEach(row => {
+                            const newRecord = {
+                                id: Date.now() + Math.random(), 
+                                recordId: row["Kayıt ID"] || generateRecordID(),
+                                ilce: row["İlçe"] || "",
+                                mahalle: row["Mahalle"] || "",
+                                sokak: row["Sokak"] || "",
+                                kapiNo: row["No"] || "",
+                                ada: row["Ada"] || "",
+                                parsel: row["Parsel"] || "",
+                                aciklama: row["Açıklama"] || "",
+                                lat: row["Enlem"] || "",
+                                lng: row["Boylam"] || "",
+                                tarih: row["Tarih"] || new Date().toLocaleString('tr-TR')
+                            };
+                            savedLocations.push(newRecord);
+                            addedCount++;
+                        });
+                        
+                        saveData();
+                        alert(addedCount + " adet kayıt başarıyla eklendi!");
+                    } else {
+                        alert("Excel dosyası boş veya okunamadı.");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Excel okunurken hata oluştu! Lütfen dosya formatını kontrol edin.");
                 }
                 input.value = "";
             };
