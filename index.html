@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi v8.2</title>
+    <title>Saha Veri Sistemi v8.3</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -159,7 +159,32 @@
         }
         .btn-parcel:hover { background-color: var(--success-dark); transform: translateY(-2px); }
 
+        /* YENİ EXCEL GETİR BUTONU İÇİN STİL */
+        .btn-import {
+            background-color: #10b981; /* Zümrüt Yeşili */
+            width: auto;
+            padding: 6px 15px;
+            font-size: 13px;
+            border-radius: 6px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn-import:hover { background-color: #059669; transform: scale(1.05); }
+
         .list-container { margin-top: 10px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
+        
+        /* Liste Başlık Alanı Düzeni */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .list-header h3 { margin: 0; color: var(--dark); }
+
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { text-align: left; padding: 8px; background: #f1f5f9; color: #475569; }
         td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
@@ -193,7 +218,6 @@
             top: 0;
             width: 210mm; 
             background: white;
-            /* YENİ AYAR: Üst/Alt 30px, Sol/Sağ 30px */
             padding: 30px 30px; 
             font-family: 'Roboto', sans-serif;
             color: #000;
@@ -238,7 +262,7 @@
             border-left: 4px solid #cc0000;
         }
 
-        /* Harita Yüksekliği: 340px (Dengeli) */
+        /* Harita Yüksekliği: 340px */
         .pdf-map-container {
             height: 340px; 
             border: 1px solid #ccc;
@@ -254,7 +278,7 @@
         .pdf-info-table td { border: 1px solid #999; padding: 4px; }
         .pdf-label { font-weight: bold; background-color: #f9fafb; width: 130px; }
         
-        /* Fotoğraflar: Yükseklik 240px (Dengeli) */
+        /* Fotoğraflar: Yükseklik 240px */
         .pdf-photos { 
             display: flex; 
             justify-content: space-between; 
@@ -289,7 +313,7 @@
 
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0;">📍 Saha Veri Sistemi v8.2</h2>
+            <h2 style="margin:0;">📍 Saha Veri Sistemi v8.3</h2>
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0</span>
         </div>
         
@@ -367,7 +391,14 @@
         </button>
 
         <div class="list-container" id="listArea">
-            <h3>Kayıt Listesi</h3>
+            <div class="list-header">
+                <h3>Kayıt Listesi</h3>
+                <button class="btn-import" onclick="document.getElementById('excelInput').click()">
+                    <i class="fas fa-file-import"></i> Excel Getir
+                </button>
+                <input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none" onchange="importExcel(this)">
+            </div>
+
             <div style="overflow-x: auto;">
                 <table id="locationTable">
                     <thead>
@@ -593,7 +624,7 @@
                 document.getElementById('pdf-ilce-mahalle').innerText = document.getElementById('ilce').value + " / " + document.getElementById('mahalle').value;
                 document.getElementById('pdf-adres').innerText = document.getElementById('sokak').value + " No:" + document.getElementById('kapiNo').value;
                 document.getElementById('pdf-ada-parsel').innerText = document.getElementById('ada').value + " / " + document.getElementById('parsel').value;
-                // AÇIKLAMA PDF'E YAZILIYOR
+                // AÇIKLAMA
                 document.getElementById('pdf-aciklama').innerText = document.getElementById('aciklama').value;
                 document.getElementById('pdf-coords').innerText = document.getElementById('lat').value + ", " + document.getElementById('lng').value;
 
@@ -645,7 +676,7 @@
                 kapiNo: document.getElementById('kapiNo').value,
                 ada: document.getElementById('ada').value,
                 parsel: document.getElementById('parsel').value,
-                aciklama: document.getElementById('aciklama').value, // Açıklama kaydediliyor
+                aciklama: document.getElementById('aciklama').value, 
                 lat: lat, lng: document.getElementById('lng').value,
                 tarih: new Date().toLocaleString('tr-TR')
             };
@@ -674,7 +705,7 @@
             document.getElementById('kapiNo').value = l.kapiNo;
             document.getElementById('ada').value = l.ada;
             document.getElementById('parsel').value = l.parsel;
-            document.getElementById('aciklama').value = l.aciklama || ""; // Açıklama geri yükleniyor
+            document.getElementById('aciklama').value = l.aciklama || ""; 
             updateMarker(parseFloat(l.lat), parseFloat(l.lng));
             map.setView([l.lat, l.lng], 18);
             document.getElementById('mainBtn').innerText = "Güncelle";
@@ -717,13 +748,58 @@
             });
         }
 
+        // --- YENİ EKLENEN EXCEL IMPORT FONKSİYONU ---
+        function importExcel(input) {
+            if(!input.files || !input.files[0]) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                if(jsonData.length > 0) {
+                    let addedCount = 0;
+                    jsonData.forEach(row => {
+                        // Excel sütunlarını uygulama verisine eşle
+                        const newRecord = {
+                            id: Date.now() + Math.random(), // Benzersiz ID
+                            recordId: row["Kayıt ID"] || generateRecordID(),
+                            ilce: row["İlçe"] || "",
+                            mahalle: row["Mahalle"] || "",
+                            sokak: row["Sokak"] || "",
+                            kapiNo: row["No"] || "",
+                            ada: row["Ada"] || "",
+                            parsel: row["Parsel"] || "",
+                            aciklama: row["Açıklama"] || "",
+                            lat: row["Enlem"] || "",
+                            lng: row["Boylam"] || "",
+                            tarih: row["Tarih"] || new Date().toLocaleString('tr-TR')
+                        };
+                        savedLocations.push(newRecord);
+                        addedCount++;
+                    });
+                    
+                    saveData();
+                    alert(addedCount + " adet kayıt başarıyla eklendi!");
+                } else {
+                    alert("Excel dosyası boş veya okunamadı.");
+                }
+                // Input'u temizle ki aynı dosya tekrar seçilebilsin
+                input.value = "";
+            };
+            reader.readAsArrayBuffer(input.files[0]);
+        }
+
         function exportToExcel() {
             if (!savedLocations.length) return alert("Liste boş.");
             const excelData = savedLocations.map(loc => ({
                 "Kayıt ID": loc.recordId,
                 "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
                 "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
-                "Açıklama": loc.aciklama || "", // Excel'e eklendi
+                "Açıklama": loc.aciklama || "", 
                 "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
             }));
             const ws = XLSX.utils.json_to_sheet(excelData);
