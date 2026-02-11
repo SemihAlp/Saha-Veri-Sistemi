@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi</title>
+    <title>Saha Veri Sistemi v10.5</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -12,7 +12,6 @@
     <style>
         /* --- RENK PALETİ --- */
         :root {
-            /* Varsayılan (Gündüz) */
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --success: #10b981;
@@ -66,7 +65,6 @@
 
         body { padding: 20px 10px; }
 
-        /* --- ANA KART --- */
         .container {
             background: var(--bg-card);
             width: 100%;
@@ -79,10 +77,9 @@
             transition: background-color 0.3s ease;
         }
 
-        /* --- BAŞLIK ALANI --- */
         .app-header {
             display: grid;
-            grid-template-columns: 1fr auto 1fr; /* Sol - Orta - Sağ */
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             margin-bottom: 20px;
             border-bottom: 2px solid var(--bg-body);
@@ -120,12 +117,15 @@
         }
         #count-badge:active { transform: scale(0.95); }
 
-        /* --- HARİTA --- */
         #map {
             height: 350px; width: 100%;
             border-radius: 12px; margin-bottom: 25px;
             border: 1px solid var(--border-color);
             z-index: 1;
+        }
+
+        .leaflet-container {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath stroke='black' stroke-width='4' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3C/svg%3E") 12 12, crosshair !important;
         }
 
         .leaflet-control-custom {
@@ -142,7 +142,6 @@
         }
         .leaflet-control-custom:hover { color: var(--primary); background-color: var(--input-bg) !important; }
 
-        /* --- FORM ALANI --- */
         .form-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
             margin-bottom: 25px;
@@ -177,7 +176,6 @@
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 5px;
         }
 
-        /* --- BUTONLAR --- */
         .btn {
             width: 100%; padding: 14px; border: none; border-radius: 10px;
             color: white; font-weight: 600; cursor: pointer;
@@ -209,12 +207,10 @@
         }
         .btn-parcel:hover { background-color: var(--success-hover); }
 
-        /* --- LİSTE VE EXCEL BUTONU --- */
         .list-container { margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; }
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .list-header h3 { margin: 0; color: var(--text-main); font-size: 18px; }
 
-        /* Excel Getir Butonu */
         .btn-import {
             background-color: var(--success);
             border: none;
@@ -242,7 +238,7 @@
             padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main);
         }
         tr:last-child td { border-bottom: none; }
-        tr:nth-child(even) { background-color: var(--table-row-even); }
+        #locationTable tr:nth-child(even) { background-color: var(--table-row-even); }
 
         .action-btn { border: none; background: none; cursor: pointer; font-size: 16px; margin: 0 6px; transition: transform 0.2s; opacity: 0.8; }
         .action-btn:hover { transform: scale(1.2); opacity: 1; }
@@ -269,7 +265,7 @@
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         /* ========================================================
-           PDF ALANI (ÖZEL DÜZELTME - FIX)
+           PDF ALANI
            ======================================================== */
         #printable-area {
             position: fixed;
@@ -286,59 +282,22 @@
             align-items: center; 
         }
         
-        .pdf-header, .pdf-section-title, .pdf-map-container, .pdf-info-table, .pdf-photos {
-            width: 100% !important;
-        }
-
-        .pdf-header {
-            text-align: center; border-bottom: 2px solid #cc0000;
-            padding-bottom: 5px; margin-bottom: 8px; margin-top: 5px; position: relative;
-        }
+        .pdf-header, .pdf-section-title, .pdf-map-container, .pdf-info-table, .pdf-photos { width: 100% !important; }
+        .pdf-header { text-align: center; border-bottom: 2px solid #cc0000; padding-bottom: 5px; margin-bottom: 8px; margin-top: 5px; position: relative; }
         .pdf-title { font-size: 18px; font-weight: bold; color: #cc0000; margin: 0; }
         .pdf-subtitle { font-size: 10px; color:#555; margin-top: 2px; }
-
-        .pdf-id-box {
-            position: absolute; top: 0; right: 0; border: 1px solid #333;
-            padding: 3px 6px; font-weight: bold; font-size: 11px;
-            background-color: #f3f4f6 !important; color: #333 !important;
-        }
-
-        .pdf-section-title {
-            font-weight: bold; margin-bottom: 3px; font-size: 12px; 
-            background: #f3f4f6 !important; 
-            padding: 4px; border-left: 4px solid #cc0000; color: black !important;
-        }
-
-        .pdf-map-container {
-            height: 360px; border: 1px solid #ccc; margin-bottom: 8px; 
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; background-color: #eee !important;
-        }
+        .pdf-id-box { position: absolute; top: 0; right: 0; border: 1px solid #333; padding: 3px 6px; font-weight: bold; font-size: 11px; background-color: #f3f4f6 !important; color: #333 !important; }
+        .pdf-section-title { font-weight: bold; margin-bottom: 3px; font-size: 12px; background: #f3f4f6 !important; padding: 4px; border-left: 4px solid #cc0000; color: black !important; }
+        .pdf-map-container { height: 340px; border: 1px solid #ccc; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #eee !important; }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* PDF TABLOSU - SİYAH ÇERÇEVE VE BEYAZ ZEMİN ZORLAMA */
-        /* Bu bölüm PDF'teki şeffaf çizgi sorununu çözer */
-        #printable-area table,
-        #printable-area th,
-        #printable-area td {
-            border: 1px solid #000 !important; /* Simsiyah Çerçeve */
-            border-collapse: collapse !important;
-            color: #000 !important; /* Siyah Yazı */
-            background-color: #fff !important; /* Beyaz Zemin */
-        }
-        
+        #printable-area table, #printable-area th, #printable-area td { border: 1px solid #000 !important; border-collapse: collapse !important; color: #000 !important; background-color: #fff !important; }
         .pdf-info-table { margin-bottom: 8px; font-size: 10px; width: 100%; }
         .pdf-info-table td { padding: 4px; }
-        .pdf-label { 
-            font-weight: bold; background-color: #f9fafb !important; width: 130px; 
-        }
+        .pdf-label { font-weight: bold; background-color: #f9fafb !important; width: 130px; }
         
         .pdf-photos { display: flex; justify-content: space-between; gap: 2%; margin-top: 5px; }
-        .pdf-photo-box {
-            width: 49%; height: 260px; border: 1px solid #ccc;
-            display: flex; align-items: center; justify-content: center;
-            background: #fafafa !important; overflow: hidden; border-radius: 2px;
-        }
+        .pdf-photo-box { width: 49%; height: 240px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #fafafa !important; overflow: hidden; border-radius: 2px; }
         .pdf-photo-img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
@@ -353,11 +312,11 @@
 
     <div class="container">
         <div class="app-header">
-            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Temayı Değiştir">
+            <button class="theme-toggle-btn" type="button" onclick="toggleTheme()" title="Temayı Değiştir">
                 <i class="fas fa-moon"></i>
             </button>
 
-            <h2>📍 Saha Veri</h2>
+            <h2>📍 Saha Veri v10.5</h2>
 
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0 Kayıt</span>
         </div>
@@ -610,17 +569,23 @@
 
         async function getAddress(lat, lng) {
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "Adres...";
+            document.getElementById('loaderText').innerText = "Adres Bulunuyor...";
             try {
                 const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
                 const d = await r.json();
-                const a = d.address;
-                document.getElementById('ilce').value = a.town || a.city_district || a.county || '';
-                document.getElementById('mahalle').value = a.suburb || a.neighborhood || '';
-                document.getElementById('sokak').value = a.road || '';
+                
+                const a = d.address || {};
+                
+                document.getElementById('ilce').value = a.town || a.county || a.city_district || a.city || '';
+                document.getElementById('mahalle').value = a.neighbourhood || a.suburb || a.village || '';
+                document.getElementById('sokak').value = a.road || a.pedestrian || a.path || '';
                 document.getElementById('kapiNo').value = a.house_number || '';
-            } catch(e) { console.log(e); }
-            finally { document.getElementById('loader').style.display = 'none'; }
+
+            } catch(e) { 
+                console.log("Adres çekme hatası:", e); 
+            } finally { 
+                document.getElementById('loader').style.display = 'none'; 
+            }
         }
 
         function openTKGM() {
