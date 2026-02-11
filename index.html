@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saha Veri Sistemi v10.5</title>
+    <title>Saha Veri Sistemi</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- RENK PALETİ --- */
         :root {
             --primary: #3b82f6;
             --primary-hover: #2563eb;
@@ -32,7 +31,6 @@
             --shadow-color: rgba(0, 0, 0, 0.1);
         }
 
-        /* GECE MODU TANIMLARI */
         [data-theme="dark"] {
             --primary: #60a5fa;
             --primary-hover: #3b82f6;
@@ -264,9 +262,6 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* ========================================================
-           PDF ALANI
-           ======================================================== */
         #printable-area {
             position: fixed;
             left: -9999px;
@@ -316,7 +311,7 @@
                 <i class="fas fa-moon"></i>
             </button>
 
-            <h2>📍 Saha Veri v10.5</h2>
+            <h2>📍 Saha Veri</h2>
 
             <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0 Kayıt</span>
         </div>
