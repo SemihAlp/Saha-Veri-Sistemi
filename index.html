@@ -7,432 +7,243 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
+        /* --- RENK PALETİ VE TEMEL AYARLAR --- */
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --success: #10b981;
-            --success-hover: #059669;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --warning: #f59e0b;
-            
-            --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
-            --text-main: #334155;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --input-bg: #f8fafc;
-            --input-text: #1e293b;
-            --table-head-bg: #f8fafc;
-            --table-row-even: #fcfcfc;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] {
-            --primary: #60a5fa;
-            --primary-hover: #3b82f6;
-            --success: #34d399;
-            --success-hover: #10b981;
-            --danger: #f87171;
-            --danger-hover: #ef4444;
-            
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f1f5f9;
-            --text-light: #94a3b8;
-            --border-color: #334155;
-            --input-bg: #0f172a;
-            --input-text: #f8fafc;
-            --table-head-bg: #0f172a;
-            --table-row-even: #253045;
-            --shadow-color: rgba(0, 0, 0, 0.4);
+            --primary: #3ba9f6; --primary-hover: #2b90d9;
+            --primary-dark: #3b82f6; 
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --bg-body: #f1f5f9; --bg-card: #ffffff;
+            --text-main: #334155; --text-light: #64748b;
+            --border-color: #e2e8f0; --input-bg: #f8fafc;
         }
 
         html, body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-body);
-            font-family: 'Roboto', sans-serif;
-            color: var(--text-main);
-            transition: background-color 0.3s ease, color 0.3s ease;
-            overflow-x: hidden;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Roboto', sans-serif; color: var(--text-main);
+            overflow: hidden; 
         }
 
-        body { padding: 20px 10px; }
-
-        .container {
-            background: var(--bg-card);
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px var(--shadow-color);
-            box-sizing: border-box;
-            transition: background-color 0.3s ease;
-        }
-
-        .app-header {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--bg-body);
-            padding-bottom: 15px;
-        }
-
-        .app-header h2 { 
-            margin: 0; 
-            color: var(--text-main); 
-            font-size: 20px; 
-            font-weight: 700; 
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .theme-toggle-btn {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-main);
-            width: 40px; height: 40px;
-            border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; transition: all 0.3s ease;
-            justify-self: start;
-        }
-        .theme-toggle-btn:hover { background-color: var(--input-bg); border-color: var(--primary); color: var(--primary); }
-
-        #count-badge {
-            background: var(--primary); color: white;
-            padding: 5px 12px; border-radius: 20px;
-            font-size: 13px; font-weight: 600;
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-            justify-self: end;
-        }
-        #count-badge:active { transform: scale(0.95); }
-
-        #map {
-            height: 350px; width: 100%;
-            border-radius: 12px; margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-            z-index: 1;
-        }
-
-        .leaflet-container {
-            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath stroke='black' stroke-width='4' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3C/svg%3E") 12 12, crosshair !important;
-        }
+        #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 1; }
+        .leaflet-container { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath stroke='black' stroke-width='4' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M12 2v20M2 12h20'/%3E%3C/svg%3E") 12 12, crosshair !important; }
 
         .leaflet-control-custom {
-            background-color: var(--bg-card) !important;
-            border: 1px solid var(--border-color);
-            border-radius: 8px; width: 36px; height: 36px;
-            line-height: 36px; text-align: center;
-            cursor: pointer; color: var(--text-main); font-size: 18px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            display: flex; justify-content: center; align-items: center;
-            transition: all 0.2s ease;
-            z-index: 800;
+            background-color: var(--bg-card) !important; border: 2px solid var(--border-color); border-radius: 8px;
+            width: 40px; height: 40px; line-height: 40px; text-align: center; cursor: pointer;
+            color: var(--text-main); font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .leaflet-control-custom:hover { color: var(--primary); background-color: var(--input-bg) !important; }
+        .leaflet-control-custom:hover { color: #3b82f6; background-color: var(--input-bg) !important; }
 
-        .form-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            margin-bottom: 25px;
+        /* --- MENÜ BUTONU VE SİDEBAR --- */
+        #menu-toggle-btn {
+            position: absolute; top: 15px; left: 15px; z-index: 1000;
+            background-color: var(--bg-card); color: #3b82f6; border: 2px solid var(--border-color);
+            padding: 10px 18px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; gap: 12px; } }
+        #menu-toggle-btn:hover { background-color: #3b82f6; color: white; border-color: #3b82f6; }
 
-        .input-group { display: flex; flex-direction: column; width: 100%; }
+        #sidebar {
+            position: fixed; top: 15px; bottom: 15px; left: 15px; width: 380px;
+            background-color: var(--bg-card); z-index: 1001; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transform: translateX(-120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; 
+        }
+        #sidebar.open { transform: translateX(0); }
+        @media (max-width: 450px) { #sidebar { width: calc(100% - 30px); } }
+
+        .close-btn { 
+            position: absolute; top: 10px; right: 15px; background: none; border: none; 
+            font-size: 24px; color: var(--text-light); cursor: pointer; z-index: 10; padding: 5px;
+        }
+        .close-btn:hover { color: var(--danger); }
+        .sidebar-content { padding: 45px 20px 20px 20px; overflow-y: auto; flex: 1; position: relative; }
+
+        /* --- ARAMA VE PAYLAŞ --- */
+        .search-share-container { display: flex; gap: 10px; margin-bottom: 15px; align-items: stretch; height: 42px; }
+        .search-input {
+            flex: 1; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 12px; 
+            font-size: 13px; outline: none; color: var(--text-main);
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 169, 246, 0.1); }
         
-        label {
-            font-size: 12px; color: var(--text-light); margin-bottom: 6px;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        input {
-            padding: 12px 15px; border: 1px solid var(--border-color);
-            border-radius: 8px; font-size: 15px; width: 100%; box-sizing: border-box;
-            background-color: var(--input-bg); color: var(--input-text);
-            transition: all 0.2s;
-        }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-
-        #recordId {
-            background-color: rgba(59, 130, 246, 0.1); color: var(--primary);
-            font-weight: 700; text-align: center;
-            border-color: var(--border-color); letter-spacing: 1px;
-        }
-
-        .ada-parsel-container { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-end; }
-        .photo-upload-area {
-            grid-column: 1 / -1; background-color: var(--input-bg);
-            padding: 15px; border-radius: 10px; border: 1px dashed var(--border-color);
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 5px;
-        }
-
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 10px;
-            color: white; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            gap: 10px; font-size: 15px; font-family: 'Roboto', sans-serif;
-            transition: all 0.2s ease; margin-bottom: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .btn:active { transform: scale(0.98); box-shadow: none; }
-        .btn-pdf { background-color: var(--danger); }
-        .btn-pdf:hover { background-color: var(--danger-hover); }
+        .dropdown { position: relative; width: 100px; display: flex; }
+        .dropdown-btn { 
+            background-color: var(--primary); color: white; border: none; width: 100%;
+            border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        } 
+        .dropdown-btn:hover { background-color: var(--primary-hover); }
         
-        .btn-add { background-color: var(--primary); font-size: 16px; padding: 16px; }
-        .btn-add:hover { background-color: var(--primary-hover); }
+        .dropdown-content {
+            display: none; position: absolute; top: 100%; right: 0; margin-top: 5px; 
+            background-color: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1002; 
+            border-radius: 6px; border: 1px solid var(--border-color); min-width: 170px; overflow: hidden;
+        }
+        .dropdown:hover .dropdown-content, .dropdown:focus-within .dropdown-content { display: block; }
+        .dropdown-content a { color: var(--text-main); padding: 12px 14px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+        .dropdown-content a:last-child { border-bottom: none; }
+        .dropdown-content a:hover { background-color: var(--input-bg); }
+
+        /* --- LİSTE VE KARTLAR --- */
+        .list-count-text { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 10px; padding-left: 2px; }
+        #locationList { display: flex; flex-direction: column; gap: 0; }
         
-        .btn-update { background-color: var(--warning); color: #fff; }
-        .btn-update:hover { filter: brightness(90%); }
-        .btn-excel { background-color: var(--success); margin-top: 15px; }
-        .btn-excel:hover { background-color: var(--success-hover); }
-        .btn-clear { 
-            background-color: transparent; color: var(--text-light); box-shadow: none; 
-            border: 1px solid var(--border-color); margin-top: 5px; padding: 10px; font-size: 13px;
+        .list-card {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 4px; border-bottom: 1px solid var(--border-color);
         }
-        .btn-clear:hover { background-color: var(--bg-body); color: var(--danger); border-color: var(--danger); }
+        .list-card-main { flex: 1; display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
+        .list-card-row1 { display: flex; align-items: center; gap: 8px; }
+        .badge-id { background-color: #1e293b; color: white; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        .card-ada-parsel { font-size: 15px; font-weight: 700; color: #1e293b; }
+        .list-card-row2 { font-size: 13px; font-weight: 600; color: #475569; }
+        .list-card-row3 { font-size: 11px; color: #64748b; }
         
-        .btn-parcel {
-            background-color: var(--success); width: auto; white-space: nowrap;
-            height: 44px; padding: 0 20px; margin-bottom: 1px; font-size: 13px; box-shadow: none;
-        }
-        .btn-parcel:hover { background-color: var(--success-hover); }
+        .card-actions { display: flex; gap: 6px; margin-left: 10px; }
+        .btn-card { background: #fff; border-radius: 4px; font-size: 10px; font-weight: 700; padding: 6px 10px; cursor: pointer; transition: 0.2s; }
+        .btn-delete { border: 1px solid var(--danger); color: var(--danger); }
+        .btn-delete:hover { background: var(--danger); color: white; }
 
-        .list-container { margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; }
-        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .list-header h3 { margin: 0; color: var(--text-main); font-size: 18px; }
-
-        .btn-import {
-            background-color: var(--success);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex; align-items: center; gap: 6px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .btn-clear-all {
+            background-color: transparent; color: var(--text-light); border: 1px solid var(--border-color); 
+            border-radius: 6px; width: 100%; padding: 10px; margin-top: 15px; font-size: 12px; font-weight: 600; cursor: pointer;
         }
-        .btn-import:hover { background-color: var(--success-hover); }
+        .btn-clear-all:hover { background-color: var(--input-bg); color: var(--danger); border-color: var(--danger); }
+        #emptyMsg { text-align: center; color: #999; padding: 15px; font-size: 12px; }
 
-        table { 
-            width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; 
-            border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+        /* ========================================================
+           HARİTA ÜZERİNDEKİ AÇILIR FORM (POPUP) TASARIMI
+           ======================================================== */
+        .custom-popup-container .leaflet-popup-content-wrapper { padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .custom-popup-container .leaflet-popup-content { margin: 0; width: 330px !important; }
+        .custom-popup-container .leaflet-popup-tip { box-shadow: none; }
+        
+        .pop-header { background-color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .pop-title { font-weight: 700; font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;}
+        /* ID sağdan margin ile çarpıdan uzaklaştırıldı */
+        .pop-id { font-size: 10px; font-weight: 600; color: #64748b; margin-right: 20px; }
+        
+        .pop-body { padding: 15px; background: #fff; }
+        .pop-btn-blue { background-color: #3ba9f6; color: white; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: 600; font-size: 13px; margin-bottom: 10px; cursor: pointer; }
+        
+        /* TKGM Yapıştır Alanı İnceltildi */
+        .pop-paste-area { 
+            background-color: #fdf4ff; border: 1px dashed #d946ef; color: #d946ef; 
+            border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; 
+            align-items: center; font-size: 11px; font-weight: 600; cursor: pointer; margin-bottom: 12px; outline: none;
         }
-        th { 
-            text-align: left; padding: 12px; background: var(--table-head-bg); 
-            color: var(--text-light); font-weight: 600; border-bottom: 1px solid var(--border-color);
+        .pop-paste-area .img-icon { background: #d946ef; color: white; padding: 3px 5px; border-radius: 4px; }
+        
+        .pop-form-grid { display: flex; flex-direction: column; gap: 8px; }
+        .pop-row { display: flex; align-items: center; }
+        .pop-row label { width: 85px; font-size: 11px; font-weight: 700; color: #475569; margin: 0; text-transform: none;}
+        .pop-row input { flex: 1; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; color: #1e293b;}
+        .pop-row input:focus { border-color: #3ba9f6; box-shadow: 0 0 0 2px rgba(59, 169, 246, 0.1); }
+        
+        .pop-footer { display: flex; gap: 10px; margin-top: 15px; align-items: stretch; }
+        .pop-btn-save { background-color: #10b981; color: white; border: none; flex: 4; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        
+        /* YENİ: Kamera Dropdown Menüsü */
+        .cam-dropdown { position: relative; flex: 1; display: flex; }
+        .pop-btn-cam { background-color: #f59e0b; color: white; border: none; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .cam-dropdown-content {
+            display: none; position: absolute; bottom: 100%; right: 0; margin-bottom: 5px;
+            background-color: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.15); z-index: 1002; 
+            border-radius: 6px; border: 1px solid var(--border-color); min-width: 120px; overflow: hidden;
         }
-        td { 
-            padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-main);
-        }
-        tr:last-child td { border-bottom: none; }
-        #locationTable tr:nth-child(even) { background-color: var(--table-row-even); }
+        .cam-dropdown-content.show { display: block; }
+        .cam-dropdown-content a { color: var(--text-main); padding: 10px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+        .cam-dropdown-content a:last-child { border-bottom: none; }
+        .cam-dropdown-content a:hover { background-color: var(--input-bg); }
 
-        .action-btn { border: none; background: none; cursor: pointer; font-size: 16px; margin: 0 6px; transition: transform 0.2s; opacity: 0.8; }
-        .action-btn:hover { transform: scale(1.2); opacity: 1; }
-        .edit-btn { color: var(--warning); }
-        .delete-btn { color: var(--danger); }
-
-        #emptyMsg { text-align: center; color: var(--text-light); padding: 30px; font-style: italic; font-size: 14px; }
-
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-            color: white; font-weight: bold;
-        }
-
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: var(--dark);
-            color: #fff; text-align: center; border-radius: 50px; padding: 16px 24px;
-            position: fixed; z-index: 9999; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; font-weight: bold; }
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        #printable-area {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 210mm; 
-            background: white !important; 
-            color: black !important; 
-            padding: 30px 30px; 
-            font-family: 'Roboto', sans-serif;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-        }
-        
-        .pdf-header, .pdf-section-title, .pdf-map-container, .pdf-info-table, .pdf-photos { width: 100% !important; }
-        .pdf-header { text-align: center; border-bottom: 2px solid #cc0000; padding-bottom: 5px; margin-bottom: 8px; margin-top: 5px; position: relative; }
+        /* GİZLİ PDF ALANI */
+        #printable-area { position: fixed; left: -9999px; top: 0; width: 210mm; background: white !important; color: black !important; padding: 30px; font-family: 'Roboto', sans-serif; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
+        .pdf-header, .pdf-section-title, .pdf-map-container, .pdf-info-table { width: 100% !important; }
+        .pdf-header { text-align: center; border-bottom: 2px solid #cc0000; padding-bottom: 5px; margin-bottom: 8px; position: relative; }
         .pdf-title { font-size: 18px; font-weight: bold; color: #cc0000; margin: 0; }
         .pdf-subtitle { font-size: 10px; color:#555; margin-top: 2px; }
-        .pdf-id-box { position: absolute; top: 0; right: 0; border: 1px solid #333; padding: 3px 6px; font-weight: bold; font-size: 11px; background-color: #f3f4f6 !important; color: #333 !important; }
-        .pdf-section-title { font-weight: bold; margin-bottom: 3px; font-size: 12px; background: #f3f4f6 !important; padding: 4px; border-left: 4px solid #cc0000; color: black !important; }
-        .pdf-map-container { height: 340px; border: 1px solid #ccc; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #eee !important; }
+        .pdf-id-box { position: absolute; top: 0; right: 0; border: 1px solid #333; padding: 3px 6px; font-weight: bold; font-size: 11px; background-color: #f3f4f6 !important;}
+        .pdf-section-title { font-weight: bold; margin-bottom: 3px; font-size: 12px; background: #f3f4f6 !important; padding: 4px; border-left: 4px solid #cc0000;}
+        .pdf-map-container { height: 320px; border: 1px solid #ccc; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .pdf-map-img { width: 100%; height: 100%; object-fit: cover; }
-        
         #printable-area table, #printable-area th, #printable-area td { border: 1px solid #000 !important; border-collapse: collapse !important; color: #000 !important; background-color: #fff !important; }
-        .pdf-info-table { margin-bottom: 8px; font-size: 10px; width: 100%; }
-        .pdf-info-table td { padding: 4px; }
-        .pdf-label { font-weight: bold; background-color: #f9fafb !important; width: 130px; }
-        
-        .pdf-photos { display: flex; justify-content: space-between; gap: 2%; margin-top: 5px; }
-        .pdf-photo-box { width: 49%; height: 240px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #fafafa !important; overflow: hidden; border-radius: 2px; }
-        .pdf-photo-img { width: 100%; height: 100%; object-fit: cover; }
+        .pdf-info-table { margin-bottom: 8px; font-size: 10px; width: 100%; } .pdf-info-table td { padding: 4px; } .pdf-label { font-weight: bold; background-color: #f9fafb !important; width: 120px; }
+
+        @media (max-width: 768px) {
+            #sidebar { top: auto; bottom: 0; left: 0; width: 100%; height: 85vh; transform: translateY(120%); border-radius: 24px 24px 0 0; }
+            #sidebar.open { transform: translateY(0); }
+            .sidebar-content { padding-top: 40px; }
+            .sidebar-content::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 50px; height: 5px; background-color: #cbd5e1; border-radius: 5px; }
+            input { font-size: 16px !important; padding: 12px; }
+            #menu-toggle-btn { top: auto; bottom: 25px; left: 50%; transform: translateX(-50%); border-radius: 30px; padding: 12px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); white-space: nowrap; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <i class="fas fa-spinner fa-spin fa-3x"></i>
-        <div style="margin-top: 15px;" id="loaderText">İşlem Yapılıyor...</div>
-    </div>
+    <div id="loader"><i class="fas fa-spinner fa-spin fa-3x"></i><div style="margin-top:15px;" id="loaderText">Bekleniyor...</div></div>
+    <div id="toast">Bilgi Mesajı</div>
 
-    <div id="toast">Fotoğraf indirildi!</div>
+    <div id="map"></div>
 
-    <div class="container">
-        <div class="app-header">
-            <button class="theme-toggle-btn" type="button" onclick="toggleTheme()" title="Temayı Değiştir">
-                <i class="fas fa-moon"></i>
-            </button>
+    <button id="menu-toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> Veri Girişi / Menü
+    </button>
 
-            <h2>📍 Saha Veri</h2>
+    <div id="sidebar">
+        <div class="sidebar-content" id="sidebarContent">
+            <button class="close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
 
-            <span id="count-badge" onclick="scrollToTable()" title="Listeye Git">0 Kayıt</span>
+            <div class="search-share-container">
+                <input type="text" id="searchInput" class="search-input" onkeyup="filterList()" placeholder="Detaylı Ara (ID, İlçe, Mah, Ada, Parsel)...">
+                
+                <div class="dropdown">
+                    <button class="dropdown-btn">
+                        <i class="fas fa-link"></i> Paylaş
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="javascript:void(0)" onclick="generatePDF()"><i class="fas fa-file-pdf" style="color: #ef4444; width:15px; text-align:center;"></i> Tekli PDF Rapor</a>
+                        <a href="javascript:void(0)" onclick="exportToExcel()"><i class="fas fa-file-excel" style="color: #10b981; width:15px; text-align:center;"></i> Excel (XLSX)</a>
+                        <a href="javascript:void(0)" onclick="exportToKML()"><i class="fas fa-map-marked-alt" style="color: #3ba9f6; width:15px; text-align:center;"></i> Harita (KML)</a>
+                        <a href="javascript:void(0)" onclick="exportToJSON()"><i class="fas fa-file-code" style="color: #8b5cf6; width:15px; text-align:center;"></i> Veri (JSON)</a>
+                        <a href="javascript:void(0)" onclick="document.getElementById('excelInput').click()"><i class="fas fa-file-import" style="color: #f59e0b; width:15px; text-align:center;"></i> Excel İçeri Aktar</a>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none;" onchange="importExcel(this)">
+            
+            <input type="file" id="tkgmFileInput" accept="image/*" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+            <input type="file" id="galleryInput" accept="image/*" style="display:none;">
+
+            <div id="listCountText" class="list-count-text">0 Nokta</div>
+            <div id="locationList"></div>
+            <div id="emptyMsg">Henüz nokta eklenmedi. Haritaya tıklayıp veri girebilirsiniz.</div>
+
+            <button class="btn-clear-all" type="button" onclick="clearAllData()"><i class="fas fa-trash"></i> Tüm Listeyi Sil</button>
         </div>
-        
-        <div id="map"></div>
-
-        <div class="form-grid" id="formArea">
-            <div class="input-group" style="grid-column: 1 / -1;">
-                <label>KAYIT ID</label>
-                <input type="text" id="recordId" readonly placeholder="Otomatik...">
-            </div>
-
-            <div class="input-group">
-                <label>İlçe</label>
-                <input type="text" id="ilce" placeholder="İlçe girin">
-            </div>
-            <div class="input-group">
-                <label>Mahalle</label>
-                <input type="text" id="mahalle" placeholder="Mahalle girin">
-            </div>
-            <div class="input-group">
-                <label>Sokak / Cadde</label>
-                <input type="text" id="sokak" placeholder="Sokak/Cadde">
-            </div>
-            <div class="input-group">
-                <label>Kapı No</label>
-                <input type="text" id="kapiNo" placeholder="No">
-            </div>
-
-            <div class="ada-parsel-container">
-                <div class="input-group" style="flex: 1;">
-                    <label>Ada</label>
-                    <input type="text" id="ada" placeholder="Ada">
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>Parsel</label>
-                    <input type="text" id="parsel" placeholder="Parsel">
-                </div>
-                <button class="btn btn-parcel" type="button" onclick="openTKGM()">
-                    <i class="fas fa-map-marked-alt"></i> TKGM
-                </button>
-            </div>
-
-            <div class="input-group" style="grid-column: 1 / -1;">
-                <label>Açıklama / Notlar</label>
-                <input type="text" id="aciklama" placeholder="Kısa not ekleyin...">
-            </div>
-
-            <div class="input-group">
-                <label>Enlem</label>
-                <input type="text" id="lat" readonly>
-            </div>
-            <div class="input-group">
-                <label>Boylam</label>
-                <input type="text" id="lng" readonly>
-            </div>
-
-            <div class="photo-upload-area">
-                <div class="input-group">
-                    <label><i class="fas fa-camera"></i> Fotoğraf 1</label>
-                    <input type="file" id="img1" accept="image/*">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-camera"></i> Fotoğraf 2</label>
-                    <input type="file" id="img2" accept="image/*">
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-pdf" type="button" onclick="generatePDF()">
-            <i class="fas fa-file-pdf"></i> Tek Sayfa PDF İndir
-        </button>
-
-        <button id="mainBtn" class="btn btn-add" type="button" onclick="handleFormAction()">
-            <i class="fas fa-plus-circle"></i> Listeye Ekle
-        </button>
-
-        <div class="list-container" id="listArea">
-            <div class="list-header">
-                <h3>Kayıt Listesi</h3>
-                <button class="btn-import" type="button" onclick="document.getElementById('excelInput').click()">
-                    <i class="fas fa-file-import"></i> Excel Getir
-                </button>
-                <input type="file" id="excelInput" accept=".xlsx, .xls" style="opacity:0; position:absolute; z-index:-1;" onchange="importExcel(this)">
-            </div>
-
-            <div style="overflow-x: auto; border-radius: 8px;">
-                <table id="locationTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th> <th>Konum</th> <th>Ada/Parsel</th>
-                            <th style="text-align: center;">İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-                <div id="emptyMsg">Henüz kayıt eklenmedi.</div>
-            </div>
-        </div>
-
-        <button class="btn btn-excel" type="button" onclick="exportToExcel()">
-            <i class="fas fa-file-excel"></i> Excel İndir
-        </button>
-        
-        <button class="btn btn-clear" type="button" onclick="clearAllData()">
-            <i class="fas fa-trash"></i> Tüm Verileri Temizle
-        </button>
     </div>
 
     <div id="printable-area">
         <div class="pdf-header">
             <div class="pdf-id-box" id="pdf-id-display"></div>
             <div class="pdf-title">SAHA TESPİT FORMU</div>
-            <div class="pdf-subtitle">Otomatik Konum Raporlama Sistemi</div>
+            <div class="pdf-subtitle">Otomatik Konum ve Parsel Raporlama Sistemi</div>
         </div>
-
         <div class="pdf-section-title">1. KONUM GÖRÜNTÜSÜ (UYDU)</div>
-        <div class="pdf-map-container">
-            <img id="pdf-map-image" class="pdf-map-img" src="" alt="Harita Görüntüsü">
-        </div>
-
+        <div class="pdf-map-container"><img id="pdf-map-image" class="pdf-map-img" src=""></div>
         <div class="pdf-section-title">2. ADRES VE KONUM DETAYLARI</div>
         <table class="pdf-info-table">
             <tr><td class="pdf-label">Tarih</td><td id="pdf-date"></td></tr>
@@ -442,16 +253,6 @@
             <tr><td class="pdf-label">Açıklama</td><td id="pdf-aciklama"></td></tr>
             <tr><td class="pdf-label">Koordinatlar</td><td id="pdf-coords"></td></tr>
         </table>
-
-        <div class="pdf-section-title">3. SAHA FOTOĞRAFLARI</div>
-        <div class="pdf-photos">
-            <div class="pdf-photo-box" id="pdf-img-box-1">
-                <span style="color:#ccc; font-size:10px;">Fotoğraf 1 Yok</span>
-            </div>
-            <div class="pdf-photo-box" id="pdf-img-box-2">
-                <span style="color:#ccc; font-size:10px;">Fotoğraf 2 Yok</span>
-            </div>
-        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -460,57 +261,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-        let map, marker;
+        let map;
+        let markersLayer;
         let savedLocations = JSON.parse(localStorage.getItem('fieldData')) || [];
-        let editingId = null;
+        
+        let currentPopupLat = null;
+        let currentPopupLng = null;
+        let currentPopupId = null;
+        let tempMarker = null;
 
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute("data-theme");
-            const newTheme = currentTheme === "dark" ? "light" : "dark";
-            document.documentElement.setAttribute("data-theme", newTheme);
-            localStorage.setItem("theme", newTheme);
-            updateThemeIcon(newTheme);
+        function showToast(message) {
+            const t = document.getElementById("toast");
+            t.innerText = message; t.className = "show"; setTimeout(() => { t.className = ""; }, 3000);
         }
 
-        function updateThemeIcon(theme) {
-            const icon = document.querySelector(".theme-toggle-btn i");
-            if (theme === "dark") {
-                icon.className = "fas fa-sun"; icon.style.color = "#fbbf24";
-            } else {
-                icon.className = "fas fa-moon"; icon.style.color = "#334155";
-            }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            setTimeout(() => { if(map) map.invalidateSize(); }, 350);
         }
-
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
 
         function generateRecordID() {
-            const now = new Date();
-            const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const y = String(now.getFullYear()).slice(-2);
-            const H = String(now.getHours()).padStart(2, '0');
-            const M = String(now.getMinutes()).padStart(2, '0');
-            const S = String(now.getSeconds()).padStart(2, '0');
-            return `${d}${m}${y}${H}${M}${S}`;
-        }
-
-        function scrollToTable() {
-            document.getElementById('listArea').scrollIntoView({ behavior: 'smooth' });
+            const now = new Date(); const pad = (n) => String(n).padStart(2, '0');
+            return `${pad(now.getDate())}${pad(now.getMonth()+1)}${String(now.getFullYear()).slice(-2)}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
         }
 
         function initMap() {
-            map = L.map('map').setView([40.1885, 29.0610], 12);
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri', maxZoom: 19, crossOrigin: 'anonymous' }).addTo(map);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { attribution: 'OSM', maxZoom: 20, crossOrigin: 'anonymous' }).addTo(map);
+            map = L.map('map', {zoomControl: false}).setView([40.1885, 29.0610], 12);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri', maxZoom: 19 }).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { attribution: 'OSM', maxZoom: 20 }).addTo(map);
+            
+            markersLayer = L.layerGroup().addTo(map);
             map.on('click', onMapClick);
             
             var CenterBtn = L.Control.extend({
-                options: { position: 'topleft' },
+                options: { position: 'bottomright' },
                 onAdd: function (map) {
                     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                    container.innerHTML = '<i class="fas fa-crosshairs"></i>';
-                    container.title = "Ortala";
+                    container.innerHTML = '<i class="fas fa-crosshairs"></i>'; container.title = "Ortala";
                     container.onclick = function(e){ e.stopPropagation(); centerMapOnMarker(); }
                     return container;
                 }
@@ -518,328 +307,384 @@
             map.addControl(new CenterBtn());
 
             var LocBtn = L.Control.extend({
-                options: { position: 'topleft' },
+                options: { position: 'bottomright' },
                 onAdd: function (map) {
                     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-                    container.innerHTML = '<i class="fas fa-location-arrow"></i>';
-                    container.style.color = "#3b82f6";
-                    container.title = "Konumum";
+                    container.innerHTML = '<i class="fas fa-location-arrow"></i>'; container.style.color = "#3b82f6"; container.title = "Konumum";
                     container.onclick = function(e){ e.stopPropagation(); locateUser(); }
                     return container;
                 }
             });
             map.addControl(new LocBtn());
+
+            setTimeout(function(){ map.invalidateSize(); }, 500);
         }
 
+        window.addEventListener('resize', function() { if(map) map.invalidateSize(); });
+
         function locateUser() {
-            if (!navigator.geolocation) { alert("Tarayıcı desteklemiyor."); return; }
+            if (!navigator.geolocation) return alert("Tarayıcı desteklemiyor.");
             document.getElementById('loader').style.display = 'flex';
             document.getElementById('loaderText').innerText = "Konum Alınıyor...";
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    const { latitude: lat, longitude: lng } = pos.coords;
-                    map.setView([lat, lng], 18); updateMarker(lat, lng); getAddress(lat, lng);
-                    if(!editingId) document.getElementById('recordId').value = generateRecordID();
-                    document.getElementById('loader').style.display = 'none';
+                    const lat = pos.coords.latitude; const lng = pos.coords.longitude;
+                    map.setView([lat, lng], 18); document.getElementById('loader').style.display = 'none';
+                    onMapClick({latlng: {lat: lat, lng: lng}});
                 },
                 () => { alert("Konum alınamadı."); document.getElementById('loader').style.display = 'none'; },
                 { enableHighAccuracy: true }
             );
         }
 
-        function centerMapOnMarker() { if(marker) map.setView(marker.getLatLng(), 18); else alert("Konum seçin."); }
+        function centerMapOnMarker() { 
+            if(currentPopupLat && currentPopupLng) {
+                map.setView([currentPopupLat, currentPopupLng], 18); 
+            } else if (savedLocations.length > 0) {
+                map.setView([savedLocations[savedLocations.length-1].lat, savedLocations[savedLocations.length-1].lng], 18);
+            }
+        }
+
+        // --- KAMERA/GALERİ DROPDOWN KONTROLÜ ---
+        window.toggleCamMenu = function(event) {
+            event.stopPropagation();
+            const menu = event.currentTarget.nextElementSibling;
+            // Diğer açık olanları kapat
+            document.querySelectorAll('.cam-dropdown-content').forEach(el => {
+                if (el !== menu) el.classList.remove('show');
+            });
+            menu.classList.toggle('show');
+        }
+
+        window.closeCamMenu = function() {
+            document.querySelectorAll('.cam-dropdown-content').forEach(el => el.classList.remove('show'));
+        }
+
+        // Ekranda herhangi bir yere tıklayınca kamera menüsünü kapat
+        document.addEventListener('click', function() { closeCamMenu(); });
+
+        // ==========================================
+        // YENİ DİNAMİK AÇILIR PENCERE (POPUP) SİSTEMİ
+        // ==========================================
+        function createPopupContent(isEdit, data) {
+            return `
+                <div class="pop-header">
+                    <div class="pop-title"><i class="fas fa-map-pin" style="color:#ef4444"></i> ${isEdit ? 'Noktayı Düzenle' : 'Yeni Nokta Ekle'}</div>
+                    <div class="pop-id" id="pop_recordId">ID: ${data.recordId}</div>
+                </div>
+                <div class="pop-body">
+                    <button class="pop-btn-blue" onclick="window.open('https://parselsorgu.tkgm.gov.tr/#ara/cografi/${data.lat}/${data.lng}', '_blank')">
+                        <i class="fas fa-globe"></i> TKGM Parsel Sorgu'da Aç
+                    </button>
+                    
+                    <div class="pop-paste-area" onclick="document.getElementById('tkgmFileInput').click()" title="Tıklayın veya CTRL+V yapın">
+                        <span><i class="fas fa-clipboard"></i> TKGM Tıkla Yapıştır (CTRL+V)</span>
+                        <span class="img-icon"><i class="fas fa-image"></i></span>
+                    </div>
+                    
+                    <div class="pop-form-grid">
+                        <div class="pop-row"><label>İlçe</label><input type="text" id="pop_ilce" value="${data.ilce || ''}"></div>
+                        <div class="pop-row"><label>Mahalle</label><input type="text" id="pop_mahalle" value="${data.mahalle || ''}"></div>
+                        <div class="pop-row"><label>Ada</label><input type="text" id="pop_ada" value="${data.ada || ''}"></div>
+                        <div class="pop-row"><label>Parsel</label><input type="text" id="pop_parsel" value="${data.parsel || ''}"></div>
+                        <div class="pop-row"><label>Cadde/Sok</label><input type="text" id="pop_sokak" value="${data.sokak || ''}"></div>
+                        <div class="pop-row"><label>Kapı No</label><input type="text" id="pop_kapiNo" value="${data.kapiNo || ''}"></div>
+                        <div class="pop-row"><label>Açıklama</label><input type="text" id="pop_aciklama" value="${data.aciklama || ''}"></div>
+                    </div>
+
+                    <div class="pop-footer">
+                        <button class="pop-btn-save" onclick="savePopupData()">
+                            <i class="fas fa-check-square"></i> ${isEdit ? 'GÜNCELLE' : 'KAYDET'}
+                        </button>
+                        
+                        <div class="cam-dropdown">
+                            <button class="pop-btn-cam" type="button" onclick="toggleCamMenu(event)" title="Fotoğraf Seçenekleri">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <div class="cam-dropdown-content">
+                                <a href="#" onclick="document.getElementById('cameraInput').click(); closeCamMenu(); event.preventDefault();"><i class="fas fa-camera"></i> Kamera</a>
+                                <a href="#" onclick="document.getElementById('galleryInput').click(); closeCamMenu(); event.preventDefault();"><i class="fas fa-image"></i> Galeri</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
 
         async function onMapClick(e) {
-            if(!editingId) document.getElementById('recordId').value = generateRecordID();
-            updateMarker(e.latlng.lat, e.latlng.lng);
-            await getAddress(e.latlng.lat, e.latlng.lng);
-        }
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+            
+            if (tempMarker) map.removeLayer(tempMarker);
+            tempMarker = L.marker([lat, lng]).addTo(map);
+            
+            currentPopupLat = lat; currentPopupLng = lng; currentPopupId = null;
 
-        function updateMarker(lat, lng) {
-            if (marker) map.removeLayer(marker);
-            marker = L.marker([lat, lng]).addTo(map);
-            document.getElementById('lat').value = lat.toFixed(6);
-            document.getElementById('lng').value = lng.toFixed(6);
-        }
+            const newRecord = { recordId: generateRecordID(), lat: lat, lng: lng };
 
-        async function getAddress(lat, lng) {
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "Adres Bulunuyor...";
+            tempMarker.bindPopup(createPopupContent(false, newRecord), {
+                maxWidth: 340, minWidth: 320, className: 'custom-popup-container'
+            }).openPopup();
+
             try {
                 const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
-                const d = await r.json();
+                const d = await r.json(); const a = d.address || {};
                 
-                const a = d.address || {};
-                
-                document.getElementById('ilce').value = a.town || a.county || a.city_district || a.city || '';
-                document.getElementById('mahalle').value = a.neighbourhood || a.suburb || a.village || '';
-                document.getElementById('sokak').value = a.road || a.pedestrian || a.path || '';
-                document.getElementById('kapiNo').value = a.house_number || '';
-
-            } catch(e) { 
-                console.log("Adres çekme hatası:", e); 
-            } finally { 
-                document.getElementById('loader').style.display = 'none'; 
-            }
+                if (document.getElementById('pop_ilce')) document.getElementById('pop_ilce').value = a.town || a.county || a.city_district || a.city || '';
+                if (document.getElementById('pop_mahalle')) document.getElementById('pop_mahalle').value = a.neighbourhood || a.suburb || a.village || '';
+                if (document.getElementById('pop_sokak')) document.getElementById('pop_sokak').value = a.road || a.pedestrian || a.path || '';
+                if (document.getElementById('pop_kapiNo')) document.getElementById('pop_kapiNo').value = a.house_number || '';
+            } catch(e) {}
         }
 
-        function openTKGM() {
-            const lat = document.getElementById('lat').value;
-            const lng = document.getElementById('lng').value;
-            if(!lat) return alert("Konum seçin.");
-            if(confirm("TKGM açılacak.")) window.open(`https://parselsorgu.tkgm.gov.tr/#ara/cografi/${lat}/${lng}`, '_blank');
-        }
+        window.savePopupData = function() {
+            if (!document.getElementById('pop_ada')) return;
 
-        function autoDownload(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (!isMobile) return;
-
-                const fileTime = file.lastModified;
-                const now = Date.now();
-                const diff = now - fileTime;
-                const isFreshCapture = diff < 120000; 
-
-                if (isFreshCapture) {
-                    let recordId = document.getElementById('recordId').value;
-                    if (!recordId) recordId = "Saha_Veri"; 
-
-                    let suffix = input.id === 'img1' ? '1' : '2';
-                    const fileName = `${recordId}-Saha_Gorseli_${suffix}.jpg`;
-
-                    const url = URL.createObjectURL(file);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                    const t = document.getElementById("toast");
-                    t.className = "show";
-                    setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
-                }
-            }
-        }
-
-        async function generatePDF() {
-            const id = document.getElementById('recordId').value;
-            if (!id) return alert("ID yok.");
-
-            document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loaderText').innerText = "PDF Oluşturuluyor...";
-
-            try {
-                if (marker) { map.setView(marker.getLatLng(), 18); await new Promise(r => setTimeout(r, 1000)); }
-
-                const mapElement = document.getElementById('map');
-                const canvas = await html2canvas(mapElement, { 
-                    useCORS: true, 
-                    scale: 2,
-                    allowTaint: true, 
-                    ignoreElements: (node) => node.classList.contains('leaflet-control')
-                });
-                
-                document.getElementById('pdf-map-image').src = canvas.toDataURL('image/jpeg', 0.85);
-
-                document.getElementById('pdf-id-display').innerText = "ID: " + id;
-                document.getElementById('pdf-date').innerText = new Date().toLocaleString('tr-TR');
-                document.getElementById('pdf-ilce-mahalle').innerText = document.getElementById('ilce').value + " / " + document.getElementById('mahalle').value;
-                document.getElementById('pdf-adres').innerText = document.getElementById('sokak').value + " No:" + document.getElementById('kapiNo').value;
-                document.getElementById('pdf-ada-parsel').innerText = document.getElementById('ada').value + " / " + document.getElementById('parsel').value;
-                document.getElementById('pdf-aciklama').innerText = document.getElementById('aciklama').value;
-                document.getElementById('pdf-coords').innerText = document.getElementById('lat').value + ", " + document.getElementById('lng').value;
-
-                await fillPdfImg('img1', 'pdf-img-box-1');
-                await fillPdfImg('img2', 'pdf-img-box-2');
-
-                const element = document.getElementById('printable-area');
-                element.style.position = 'static'; 
-                
-                const opt = {
-                    margin:       0, 
-                    filename:     `${id}_Rapor.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, scrollY: 0, useCORS: true },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                await html2pdf().set(opt).from(element).save();
-
-            } catch (err) {
-                alert("PDF oluşturulamadı: " + err.message);
-            } finally {
-                document.getElementById('printable-area').style.position = 'fixed'; 
-                document.getElementById('loader').style.display = 'none';
-            }
-        }
-
-        async function fillPdfImg(inputId, boxId) {
-            const input = document.getElementById(inputId);
-            const box = document.getElementById(boxId);
-            box.innerHTML = "";
-            if (input.files[0]) {
-                const r = new FileReader();
-                const d = await new Promise(res => { r.onload = e => res(e.target.result); r.readAsDataURL(input.files[0]); });
-                box.innerHTML = `<img src="${d}" class="pdf-photo-img">`;
-            } else { box.innerHTML = "<span style='color:#ccc; font-size:10px;'>Fotoğraf Yok</span>"; }
-        }
-
-        function handleFormAction() {
-            const lat = document.getElementById('lat').value;
-            if (!lat) return alert("Konum seçin.");
-            
             const formData = {
-                id: Date.now(),
-                recordId: document.getElementById('recordId').value || generateRecordID(),
-                ilce: document.getElementById('ilce').value,
-                mahalle: document.getElementById('mahalle').value,
-                sokak: document.getElementById('sokak').value,
-                kapiNo: document.getElementById('kapiNo').value,
-                ada: document.getElementById('ada').value,
-                parsel: document.getElementById('parsel').value,
-                aciklama: document.getElementById('aciklama').value,
-                lat: lat, lng: document.getElementById('lng').value,
+                id: currentPopupId || Date.now(),
+                recordId: document.getElementById('pop_recordId').innerText.replace('ID: ', '').trim(),
+                ilce: document.getElementById('pop_ilce').value, mahalle: document.getElementById('pop_mahalle').value,
+                sokak: document.getElementById('pop_sokak').value, kapiNo: document.getElementById('pop_kapiNo').value,
+                ada: document.getElementById('pop_ada').value, parsel: document.getElementById('pop_parsel').value,
+                aciklama: document.getElementById('pop_aciklama').value, lat: currentPopupLat, lng: currentPopupLng,
                 tarih: new Date().toLocaleString('tr-TR')
             };
 
-            if (editingId) {
-                const idx = savedLocations.findIndex(x => x.id === editingId);
-                formData.recordId = savedLocations[idx].recordId;
-                formData.id = editingId;
-                savedLocations[idx] = formData;
-                resetFormMode();
+            if (currentPopupId) {
+                const idx = savedLocations.findIndex(x => x.id === currentPopupId);
+                if (idx > -1) savedLocations[idx] = formData;
             } else {
                 savedLocations.push(formData);
+                if(tempMarker) { map.removeLayer(tempMarker); tempMarker = null; }
             }
-            saveData();
+            
+            saveData(); map.closePopup(); showToast("Veri başarıyla kaydedildi!");
         }
 
-        function saveData() { localStorage.setItem('fieldData', JSON.stringify(savedLocations)); renderTable(); }
+        // Listeden Karta Tıklanınca
+        window.editItem = function(id, event) {
+            if(event) event.stopPropagation();
+            const loc = savedLocations.find(x => x.id === id);
+            if(!loc) return;
 
-        function editItem(id) {
-            const l = savedLocations.find(x => x.id === id);
-            editingId = id;
-            document.getElementById('recordId').value = l.recordId;
-            document.getElementById('ilce').value = l.ilce;
-            document.getElementById('mahalle').value = l.mahalle;
-            document.getElementById('sokak').value = l.sokak;
-            document.getElementById('kapiNo').value = l.kapiNo;
-            document.getElementById('ada').value = l.ada;
-            document.getElementById('parsel').value = l.parsel;
-            document.getElementById('aciklama').value = l.aciklama || ""; 
-            updateMarker(parseFloat(l.lat), parseFloat(l.lng));
-            map.setView([l.lat, l.lng], 18);
-            document.getElementById('mainBtn').innerText = "Güncelle";
-            document.getElementById('mainBtn').className = "btn btn-update";
-            window.scrollTo(0, 0);
+            currentPopupLat = loc.lat; currentPopupLng = loc.lng; currentPopupId = loc.id;
+            map.setView([loc.lat, loc.lng], 18);
+            
+            markersLayer.eachLayer(m => {
+                const ll = m.getLatLng();
+                if (ll.lat.toFixed(6) === loc.lat && ll.lng.toFixed(6) === loc.lng) { m.openPopup(); }
+            });
+
+            if(window.innerWidth <= 450) toggleSidebar();
         }
 
-        function resetFormMode() {
-            editingId = null;
-            document.getElementById('mainBtn').innerText = "Listeye Ekle";
-            document.getElementById('mainBtn').className = "btn btn-add";
-            ['recordId','ilce','mahalle','sokak','kapiNo','ada','parsel','aciklama','lat','lng','img1','img2'].forEach(id => document.getElementById(id).value = "");
-            if(marker) map.removeLayer(marker);
+        function deleteItem(id, event) { 
+            if(event) event.stopPropagation();
+            if(confirm("Bu noktayı silmek istediğinize emin misiniz?")) { 
+                savedLocations = savedLocations.filter(x => x.id !== id); saveData(); 
+            } 
         }
 
-        function deleteItem(id) {
-            if(confirm("Silinsin mi?")) { savedLocations = savedLocations.filter(x => x.id !== id); saveData(); }
-        }
+        function clearAllData() { if(confirm("Tüm listeyi silmek istediğinize emin misiniz?")) { savedLocations = []; saveData(); } }
 
-        function clearAllData() {
-            if(confirm("Hepsi silinsin mi?")) { savedLocations = []; saveData(); resetFormMode(); }
-        }
+        function saveData() { localStorage.setItem('fieldData', JSON.stringify(savedLocations)); renderList(); }
 
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = "";
+        // --- LİSTE TASARIMI (Düzenle butonu kaldırıldı) ---
+        function renderList() {
+            const container = document.getElementById('locationList'); container.innerHTML = "";
             document.getElementById('emptyMsg').style.display = savedLocations.length ? 'none' : 'block';
-            document.getElementById('count-badge').innerText = savedLocations.length + " Kayıt";
+            document.getElementById('listCountText').innerText = savedLocations.length + " Nokta";
+
+            markersLayer.clearLayers();
 
             [...savedLocations].reverse().forEach(l => {
-                tbody.innerHTML += `<tr>
-                    <td><b>${l.recordId}</b></td>
-                    <td>${l.mahalle}</td>
-                    <td>${l.ada}/${l.parsel}</td>
-                    <td style="text-align:center;">
-                        <button class="action-btn edit-btn" onclick="editItem(${l.id})"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="deleteItem(${l.id})"><i class="fas fa-trash-alt"></i></button>
-                    </td>
-                </tr>`;
+                const m = L.marker([l.lat, l.lng]);
+                m.bindPopup(createPopupContent(true, l), { maxWidth: 340, minWidth: 320, className: 'custom-popup-container' });
+                markersLayer.addLayer(m);
+
+                const shortId = "ID-" + String(l.recordId).slice(-8);
+                const displayAda = l.ada || "-"; const displayParsel = l.parsel || "-";
+                const displayIlce = l.ilce || "-"; const displayMahalle = l.mahalle || "-";
+                const displaySokak = l.sokak || "-"; const displayNo = l.kapiNo ? "No:" + l.kapiNo : "";
+
+                const card = document.createElement('div'); card.className = "list-card";
+                card.innerHTML = `
+                    <div class="list-card-main" onclick="editItem(${l.id}, event)">
+                        <div class="list-card-row1">
+                            <span class="badge-id">${shortId}</span>
+                            <span class="card-ada-parsel">${displayAda} / ${displayParsel}</span>
+                        </div>
+                        <div class="list-card-row2">${displayIlce} - ${displayMahalle}</div>
+                        <div class="list-card-row3">${displaySokak} ${displayNo} | ${l.tarih}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-card btn-delete" onclick="deleteItem(${l.id}, event)">SİL</button>
+                    </div>
+                `;
+                container.appendChild(card);
             });
+            filterList();
+        }
+
+        window.filterList = function() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.list-card');
+            let visibleCount = 0;
+            cards.forEach(card => {
+                if (card.innerText.toLowerCase().includes(query)) { card.style.display = 'flex'; visibleCount++; } 
+                else { card.style.display = 'none'; }
+            });
+            document.getElementById('listCountText').innerText = visibleCount + " Nokta Bulundu";
+        }
+
+        // --- GLOBAL YAPIŞTIR & OCR SİSTEMİ ---
+        const tkgmFileInput = document.getElementById('tkgmFileInput');
+        tkgmFileInput.addEventListener('change', function(e) { if (this.files && this.files[0]) { processOCR(this.files[0]); } this.value = ''; });
+
+        document.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.includes('image')) {
+                    e.preventDefault(); const blob = item.getAsFile();
+                    if (!document.getElementById('pop_ada')) {
+                        showToast("Lütfen önce haritadan bir nokta seçip pencereyi açın!"); return;
+                    }
+                    processOCR(blob); break; 
+                }
+            }
+        });
+
+        async function processOCR(imageBlob) {
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loaderText').innerText = "Yapay Zeka TKGM Verilerini Çekiyor...";
+            try {
+                if (typeof Tesseract === 'undefined') { showToast("OCR yüklenemedi."); document.getElementById('loader').style.display = 'none'; return; }
+                const result = await Tesseract.recognize(imageBlob, 'tur');
+                parseTKGMText(result.data.text);
+            } catch(err) { showToast("Metin okunamadı."); } finally { document.getElementById('loader').style.display = 'none'; }
+        }
+
+        function parseTKGMText(text) {
+            if (!document.getElementById('pop_ada')) return; 
+
+            const lines = text.split('\n');
+            let foundAda = null, foundParsel = null, foundIlce = null, foundMahalle = null, foundSokak = null;
+
+            lines.forEach(line => {
+                let cleanLine = line.trim(); if(!cleanLine) return;
+                let adaMatch = cleanLine.match(/(?:Ada)[\s:;.-]*([0-9]+)/i); if(adaMatch && !foundAda) foundAda = adaMatch[1];
+                let parselMatch = cleanLine.match(/(?:Parsel)[\s:;.-]*([0-9a-zA-Z\/]+)/i); if(parselMatch && !foundParsel) foundParsel = parselMatch[1];
+                let ilceMatch = cleanLine.match(/(?:İlçe|Ilce|Ilçe)[\s:;.-]+([a-zA-ZçğıöşüÇĞİÖŞÜ\s]+)/i); if(ilceMatch && !foundIlce) foundIlce = ilceMatch[1].trim();
+                let mahMatch = cleanLine.match(/(?:Mahalle|Mah|Köy)[\w\/]*[\s:;.-]+([a-zA-ZçğıöşüÇĞİÖŞÜ\s]+)/i); if(mahMatch && !foundMahalle) foundMahalle = mahMatch[1].trim();
+                let sokakMatch = cleanLine.match(/(?:Sokak|Sok|Cadde|Cad|Mevkii)[\s:;.-]+([a-zA-ZçğıöşüÇĞİÖŞÜ0-9\s]+)/i); if(sokakMatch && !foundSokak) foundSokak = sokakMatch[1].trim();
+            });
+
+            if(foundAda) document.getElementById('pop_ada').value = foundAda;
+            if(foundParsel) document.getElementById('pop_parsel').value = foundParsel;
+
+            let ilceInput = document.getElementById('pop_ilce'); if(foundIlce && ilceInput.value.trim() === '') ilceInput.value = foundIlce + " (tkgm)";
+            let mahalleInput = document.getElementById('pop_mahalle'); if(foundMahalle && mahalleInput.value.trim() === '') mahalleInput.value = foundMahalle + " (tkgm)";
+            let sokakInput = document.getElementById('pop_sokak'); if(foundSokak && sokakInput.value.trim() === '') sokakInput.value = foundSokak + " (tkgm)";
+            showToast("Veriler başarıyla çekildi!");
+        }
+
+        // --- KAMERA / GALERİ FOTOĞRAF İNDİRME SİSTEMİ ---
+        function handlePhotoUpload(e) {
+            if (this.files && this.files[0] && document.getElementById('pop_recordId')) {
+                const recordId = document.getElementById('pop_recordId').innerText.replace('ID: ', '').trim();
+                const url = URL.createObjectURL(this.files[0]);
+                const a = document.createElement('a'); a.style.display = 'none'; a.href = url;
+                a.download = `${recordId}-Saha_Gorseli.jpg`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+                showToast("Fotoğraf cihaza kaydedildi!");
+            }
+            this.value = '';
+        }
+        document.getElementById('cameraInput').addEventListener('change', handlePhotoUpload);
+        document.getElementById('galleryInput').addEventListener('change', handlePhotoUpload);
+
+        // ==========================================
+        // DIŞA AKTARIM (EXPORT) FONKSİYONLARI
+        // ==========================================
+        async function generatePDF() {
+            let dataToPrint = null;
+            if (document.getElementById('pop_recordId')) {
+                dataToPrint = {
+                    recordId: document.getElementById('pop_recordId').innerText.replace('ID: ', '').trim(),
+                    ilce: document.getElementById('pop_ilce').value, mahalle: document.getElementById('pop_mahalle').value,
+                    sokak: document.getElementById('pop_sokak').value, kapiNo: document.getElementById('pop_kapiNo').value,
+                    ada: document.getElementById('pop_ada').value, parsel: document.getElementById('pop_parsel').value,
+                    aciklama: document.getElementById('pop_aciklama').value, lat: currentPopupLat, lng: currentPopupLng
+                };
+            } else if (savedLocations.length > 0) { dataToPrint = savedLocations[savedLocations.length - 1]; } 
+            else { return showToast("Lütfen önce haritadan veya listeden bir konum seçin."); }
+
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loaderText').innerText = "PDF Hazırlanıyor...";
+
+            try {
+                if(dataToPrint.lat) { map.setView([dataToPrint.lat, dataToPrint.lng], 18); await new Promise(r => setTimeout(r, 800)); }
+                document.getElementById('sidebar').classList.remove('open');
+                
+                // PÜF NOKTASI: Ekran görüntüsü alınırken form penceresi (popup) geçici olarak gizlenir
+                const popupPane = document.querySelector('.leaflet-popup-pane');
+                if (popupPane) popupPane.style.visibility = 'hidden';
+                
+                const canvas = await html2canvas(document.getElementById('map'), { useCORS: true, scale: 2, allowTaint: true, ignoreElements: (n) => n.classList.contains('leaflet-control') });
+                
+                // Ekran görüntüsü alındıktan sonra form penceresi geri getirilir
+                if (popupPane) popupPane.style.visibility = '';
+                
+                document.getElementById('pdf-map-image').src = canvas.toDataURL('image/jpeg', 0.85);
+
+                document.getElementById('pdf-id-display').innerText = "ID: " + dataToPrint.recordId;
+                document.getElementById('pdf-date').innerText = new Date().toLocaleString('tr-TR');
+                document.getElementById('pdf-ilce-mahalle').innerText = `${dataToPrint.ilce} / ${dataToPrint.mahalle}`;
+                document.getElementById('pdf-adres').innerText = `${dataToPrint.sokak} No:${dataToPrint.kapiNo}`;
+                document.getElementById('pdf-ada-parsel').innerText = `${dataToPrint.ada} / ${dataToPrint.parsel}`;
+                document.getElementById('pdf-aciklama').innerText = dataToPrint.aciklama || "";
+                document.getElementById('pdf-coords').innerText = `${dataToPrint.lat}, ${dataToPrint.lng}`;
+
+                const element = document.getElementById('printable-area'); element.style.position = 'static'; 
+                await html2pdf().set({ margin: 0, filename: `${dataToPrint.recordId}_Rapor.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(element).save();
+            } catch (err) { alert("PDF hatası: " + err.message); } 
+            finally { document.getElementById('printable-area').style.position = 'fixed'; document.getElementById('loader').style.display = 'none'; }
+        }
+
+        function exportToExcel() {
+            if (!savedLocations.length) return showToast("Liste boş.");
+            const excelData = savedLocations.map(l => ({ "Kayıt ID": l.recordId, "İlçe": l.ilce, "Mahalle": l.mahalle, "Sokak": l.sokak, "No": l.kapiNo, "Ada": l.ada, "Parsel": l.parsel, "Açıklama": l.aciklama || "", "Enlem": l.lat, "Boylam": l.lng, "Tarih": l.tarih }));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(excelData), "Veriler"); XLSX.writeFile(wb, "Saha_Verileri.xlsx"); showToast("Excel indirildi!");
+        }
+
+        function exportToKML() {
+            if (!savedLocations.length) return showToast("Liste boş.");
+            let kml = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n<name>Saha Verileri</name>`;
+            savedLocations.forEach(l => { kml += `\n<Placemark>\n<name>${l.recordId}</name>\n<description>İlçe: ${l.ilce}, Mahalle: ${l.mahalle}, Ada/Parsel: ${l.ada}/${l.parsel}</description>\n<Point>\n<coordinates>${l.lng},${l.lat},0</coordinates>\n</Point>\n</Placemark>`; });
+            kml += `\n</Document>\n</kml>`;
+            const a = document.createElement('a'); a.href = "data:application/vnd.google-earth.kml+xml;charset=utf-8," + encodeURIComponent(kml); a.download = "Saha_Verileri.kml"; document.body.appendChild(a); a.click(); a.remove(); showToast("KML indirildi!");
+        }
+
+        function exportToJSON() {
+            if (!savedLocations.length) return showToast("Liste boş.");
+            const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedLocations, null, 2)); a.download = "Saha_Verileri.json"; document.body.appendChild(a); a.click(); a.remove(); showToast("JSON indirildi!");
         }
 
         function importExcel(input) {
             if(!input.files || !input.files[0]) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            const r = new FileReader();
+            r.onload = function(e) {
                 try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-                    if(jsonData.length > 0) {
-                        let addedCount = 0;
-                        jsonData.forEach(row => {
-                            const newRecord = {
-                                id: Date.now() + Math.random(), 
-                                recordId: row["Kayıt ID"] || generateRecordID(),
-                                ilce: row["İlçe"] || "",
-                                mahalle: row["Mahalle"] || "",
-                                sokak: row["Sokak"] || "",
-                                kapiNo: row["No"] || "",
-                                ada: row["Ada"] || "",
-                                parsel: row["Parsel"] || "",
-                                aciklama: row["Açıklama"] || "",
-                                lat: row["Enlem"] || "",
-                                lng: row["Boylam"] || "",
-                                tarih: row["Tarih"] || new Date().toLocaleString('tr-TR')
-                            };
-                            savedLocations.push(newRecord);
-                            addedCount++;
-                        });
-                        
-                        saveData();
-                        alert(addedCount + " adet kayıt başarıyla eklendi!");
-                    } else {
-                        alert("Excel dosyası boş veya okunamadı.");
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("Excel okunurken hata oluştu! Lütfen dosya formatını kontrol edin.");
-                }
-                input.value = "";
-            };
-            reader.readAsArrayBuffer(input.files[0]);
+                    const data = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(e.target.result), {type: 'array'}).Sheets[XLSX.read(new Uint8Array(e.target.result), {type: 'array'}).SheetNames[0]]);
+                    let c = 0; data.forEach(row => { savedLocations.push({ id: Date.now() + Math.random(), recordId: row["Kayıt ID"] || generateRecordID(), ilce: row["İlçe"] || "", mahalle: row["Mahalle"] || "", sokak: row["Sokak"] || "", kapiNo: row["No"] || "", ada: row["Ada"] || "", parsel: row["Parsel"] || "", aciklama: row["Açıklama"] || "", lat: row["Enlem"] || "", lng: row["Boylam"] || "", tarih: row["Tarih"] || new Date().toLocaleString('tr-TR') }); c++; });
+                    saveData(); alert(`${c} kayıt eklendi!`);
+                } catch (err) { alert("Format hatası!"); } input.value = "";
+            }; r.readAsArrayBuffer(input.files[0]);
         }
 
-        function exportToExcel() {
-            if (!savedLocations.length) return alert("Liste boş.");
-            const excelData = savedLocations.map(loc => ({
-                "Kayıt ID": loc.recordId,
-                "İlçe": loc.ilce, "Mahalle": loc.mahalle, "Sokak": loc.sokak, 
-                "No": loc.kapiNo, "Ada": loc.ada, "Parsel": loc.parsel,
-                "Açıklama": loc.aciklama || "", 
-                "Enlem": loc.lat, "Boylam": loc.lng, "Tarih": loc.tarih
-            }));
-            const ws = XLSX.utils.json_to_sheet(excelData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Veriler");
-            XLSX.writeFile(wb, "Saha_Verileri.xlsx");
-        }
-
-        window.onload = () => {
-            initMap(); renderTable();
-            updateThemeIcon(savedTheme);
-            document.getElementById('img1').addEventListener('change', (e) => autoDownload(e.target));
-            document.getElementById('img2').addEventListener('change', (e) => autoDownload(e.target));
-        };
+        window.onload = () => { initMap(); renderList(); };
     </script>
 </body>
 </html>
